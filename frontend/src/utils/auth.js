@@ -52,13 +52,15 @@ class AuthManager {
   }
 
   loadUser() {
-    try {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
+    if (typeof sessionStorage !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (e) {
+        // Ignore parse errors
       }
-    } catch (e) {
-      // Ignore parse errors
     }
     // Default demo session: PLAYER for immediate testing
     return DEMO_USERS[ROLES.PLAYER];
@@ -66,10 +68,12 @@ class AuthManager {
 
   saveUser(user) {
     this.currentUser = user;
-    if (user) {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      sessionStorage.removeItem(STORAGE_KEY);
+    if (typeof sessionStorage !== 'undefined') {
+      if (user) {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
     }
     this.notify();
   }

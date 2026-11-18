@@ -325,18 +325,20 @@ function getInitialStore() {
 
 class SharedStore {
   constructor() {
-    this.data = this.load();
     this.listeners = new Set();
+    this.data = this.load();
   }
 
   load() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        return JSON.parse(raw);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          return JSON.parse(raw);
+        }
+      } catch (e) {
+        console.warn('Failed to parse localStorage store, fallback to initial store', e);
       }
-    } catch (e) {
-      console.warn('Failed to parse localStorage store, fallback to initial store', e);
     }
     const initial = getInitialStore();
     this.save(initial);
@@ -345,19 +347,27 @@ class SharedStore {
 
   save(data) {
     this.data = data;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.error('Failed to save store to localStorage', e);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.error('Failed to save store to localStorage', e);
+      }
     }
     this.notify();
   }
 
   reset() {
-    localStorage.removeItem(STORAGE_KEY);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
     const initial = getInitialStore();
     this.save(initial);
     return initial;
+  }
+
+  resetStore() {
+    return this.reset();
   }
 
   subscribe(listener) {
@@ -366,9 +376,22 @@ class SharedStore {
   }
 
   notify() {
+    if (!this.listeners) return;
     for (const l of this.listeners) {
       try { l(this.data); } catch (err) { console.error('Store listener error:', err); }
     }
+  }
+
+  getRooms() {
+    return this.data.gameRooms;
+  }
+
+  getRoomById(id) {
+    return this.data.gameRooms.find((r) => r.id === id);
+  }
+
+  getRoomByCode(code) {
+    return this.data.gameRooms.find((r) => r.code === code);
   }
 
   // --- Domain Mutators (Follow V15 State Transitions) ---

@@ -1,6 +1,7 @@
 /**
- * Player Room Detail Page (#/player/rooms/:id) - CORE SHOWCASE SCREEN
- * Sơ đồ bàn tròn SVG, Countdown hạn tuyển/cọc, Stepper, Action Panel, Mock Deposit Modal, Schedule Proposal, Reason Dialog.
+ * Player Room Detail Page (#/player/rooms/:id) — CORE SHOWCASE SCREEN
+ * Film Noir Command Station: SVG Round Table, Individual 2h Deposit Countdown, Universal Stepper,
+ * Action Terminal, Mock Deposit Voucher Modal, and 24h Refund Policy Enforcement.
  */
 import { h, renderIcon } from '../../utils/dom.js';
 import { apiService } from '../../api/api-service.js';
@@ -36,7 +37,7 @@ export class PlayerRoomDetailPage {
       const game = this.room.game_details;
       const user = auth.getUser();
 
-      // Calculate quote
+      // Calculate price quote snapshot
       const quoteRes = await apiService.getQuote({
         game_id: game.id,
         session_start_time: this.room.session_start_time,
@@ -44,34 +45,34 @@ export class PlayerRoomDetailPage {
       });
       this.quoteSnapshot = quoteRes.data;
 
-      // 1. Breadcrumbs & Back Nav
-      const navRow = h('div', { className: 'page-nav-back flex-between' },
-        h('a', { className: 'btn-back', href: '#/player/dashboard' },
-          renderIcon('chevronLeft'), ' Về bảng điều khiển'
+      // 1. Breadcrumbs & Quick Navigation
+      const navRow = h('div', { className: 'flex-between', style: 'padding: 2rem 0 1rem 0;' },
+        h('a', { className: 'link-gold flex-align-center', href: '#/player/dashboard', style: 'gap: 0.4rem; font-size: 0.9rem;' },
+          renderIcon('chevronLeft'), ' Về Bàn Làm Việc Thám Tử'
         ),
         h('button', {
           className: 'btn btn-sm btn-secondary',
           onclick: () => this.handleShareRoom(),
-        }, renderIcon('share'), ' Chia sẻ link phòng')
+        }, renderIcon('share'), ' Sao Chép Mã Vụ Án')
       );
       container.appendChild(navRow);
 
-      // 2. Room Hero Header
+      // 2. Room Hero Command Banner
       const myPart = this.room.participants.find((p) => p.user_id === user?.id);
       const isCreator = this.room.creator_id === user?.id;
 
-      const header = h('div', { className: 'room-hero-card card-dark' },
-        h('div', { className: 'hero-header-top flex-between' },
-          h('div', { className: 'code-block' },
-            h('span', { className: 'room-code' }, this.room.code),
+      const header = h('div', { className: 'room-hero-card', style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-hairline); border-radius: var(--radius-xs); padding: 2rem; box-shadow: var(--shadow-md);' },
+        h('div', { className: 'flex-between mb-3', style: 'flex-wrap: wrap; gap: 1rem;' },
+          h('div', { style: 'display: flex; gap: 0.75rem; align-items: center;' },
+            h('span', { className: 'room-code', style: 'font-size: 1.1rem; padding: 0.35rem 0.75rem;' }, this.room.code),
             isCreator ? h('span', { className: 'badge-creator' }, 'Chủ phòng') : null,
             renderStatusBadge(this.room.status)
           ),
-          // Action Countdown
-          h('div', { className: 'hero-countdown-box' },
+          // Dynamic Urgent Countdowns
+          h('div', {},
             this.room.status === GAMEROOM_STATUS.FORMING && this.room.formation_deadline
               ? renderCountdown(this.room.formation_deadline, {
-                  label: 'Hạn gom người',
+                  label: 'Hạn chiêu mộ phòng (4h)',
                   onExpire: () => this.handleDeadlineExpired(),
                 })
               : null,
@@ -83,137 +84,154 @@ export class PlayerRoomDetailPage {
               : null,
             this.room.status === GAMEROOM_STATUS.REPLENISHING && this.room.replacement_deadline
               ? renderCountdown(this.room.replacement_deadline, {
-                  label: 'Hạn tìm người thay thế',
+                  label: 'Cửa sổ tìm người thay thế',
                   onExpire: () => this.render(),
                 })
               : null
           )
         ),
-        h('h1', { className: 'room-title' }, game.title),
-        h('div', { className: 'room-meta-grid text-muted' },
-          h('div', {}, renderIcon('calendar'), ' Bắt đầu: ', h('strong', { className: 'text-light' }, formatDateTime(this.room.session_start_time))),
-          h('div', {}, renderIcon('users'), ` Yêu cầu: ${game.min_players}–${game.max_players} người`),
-          h('div', {}, renderIcon('clock'), ` Thời lượng: ${game.duration_minutes} phút`),
-          h('div', {}, renderIcon('shield'), this.room.dm_assignment ? ` DM: ${this.room.dm_assignment.dm_name}` : ' Đang chờ phân công DM'),
+        h('h1', { style: 'font-size: 2.8rem; color: var(--color-text-primary); margin-bottom: 0.75rem;' }, game.title),
+        h('div', { style: 'display: flex; gap: 1.5rem; flex-wrap: wrap; color: var(--color-text-secondary); font-size: 0.9rem;' },
+          h('span', {}, renderIcon('calendar'), ' Khởi hành: ', h('strong', { className: 'text-gold font-mono' }, formatDateTime(this.room.session_start_time))),
+          h('span', {}, renderIcon('users'), ` Bàn: ${game.min_players}–${game.max_players} thám tử`),
+          h('span', {}, renderIcon('clock'), ` Thời lượng: ${game.duration_minutes || 240} phút`),
+          h('span', {}, renderIcon('shield'), this.room.dm_assignment ? ` DM: ${this.room.dm_assignment.dm_name}` : ' Chờ Ban Quản Trị chỉ định DM'),
           this.room.physical_room
-            ? h('div', {}, renderIcon('sparkles'), ` Phòng quán: ${this.room.physical_room.name}`)
+            ? h('span', {}, renderIcon('sparkles'), ` Mật thất: ${this.room.physical_room.name}`)
             : null
         )
       );
       container.appendChild(header);
 
-      // 3. Room Stepper
-      container.appendChild(renderRoomStepper(this.room.status));
+      // 3. Universal Lifecycle Stepper
+      container.appendChild(
+        h('div', { style: 'margin: 2rem 0;' },
+          renderRoomStepper(this.room.status)
+        )
+      );
 
-      // 4. Schedule Proposal Banner (If Active)
+      // 4. Schedule Proposal Banner (If active with 2h voting window)
       if (this.room.schedule_proposal && this.room.schedule_proposal.status === 'PROPOSED') {
         container.appendChild(this.renderScheduleProposalCard(this.room.schedule_proposal));
       }
 
-      // 5. Main 2-Column Showcase (Round Table vs Actions & Pricing)
+      // 5. Asymmetric 2-Column Command Showcase
       const mainGrid = h('div', { className: 'room-main-showcase-grid' },
-        // Left Column: SVG Round Table
-        h('div', { className: 'showcase-left-col card-dark text-center' },
-          h('h3', { className: 'card-title' }, 'Bàn Tròn Người Chơi'),
+        // Left Column: SVG Round Table & Live Seating Ring
+        h('div', { style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-hairline); border-radius: var(--radius-xs); padding: 2rem; text-align: center;' },
+          h('h3', { className: 'charter-title', style: 'font-size: 1.5rem; margin-bottom: 0.25rem;' }, 'Sơ Đồ Ghế Ngồi Bàn Tròn'),
+          h('p', { className: 'text-muted font-mono', style: 'font-size: 0.75rem; margin-bottom: 1.5rem;' },
+            'VỊ TRÍ THÁM TỬ THỰC ĐỊA • ĐỒNG BỘ THỜI GIAN THỰC'
+          ),
           renderParticipantRing({
             participants: this.room.participants,
             minPlayers: game.min_players,
             maxPlayers: game.max_players,
             currentUserId: user?.id,
-            size: 330,
+            size: 340,
           }),
-          // Participants List Details
-          h('div', { className: 'participants-list-detail mt-3' },
-            h('h4', { className: 'detail-sub-title text-muted' }, 'Danh sách thành viên ghế ngồi:'),
-            h('div', { className: 'participants-rows' },
+          // Detailed Seat Roster
+          h('div', { style: 'margin-top: 2rem; text-align: left; border-top: 1px solid var(--color-noir-divider); padding-top: 1.25rem;' },
+            h('h4', { style: 'font-size: 1rem; color: var(--color-text-gold); margin-bottom: 1rem;' }, 'Trạng Thái Từng Thám Tử:'),
+            h('div', { style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
               ...this.room.participants.map((p) => {
                 const isMe = p.user_id === user?.id;
-                return h('div', { className: `participant-row-item ${isMe ? 'item-me' : ''}` },
-                  h('div', { className: 'part-name-block' },
-                    h('strong', {}, p.name),
-                    isMe ? h('span', { className: 'badge-me' }, 'Bạn') : null
+                return h('div', {
+                  style: `display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: ${isMe ? 'rgba(196, 163, 107, 0.08)' : 'var(--color-bg-surface-2)'}; border: 1px solid ${isMe ? 'var(--color-accent-gold)' : 'var(--color-border-subtle)'}; border-radius: var(--radius-xs);`
+                },
+                  h('div', {},
+                    h('strong', { style: isMe ? 'color: var(--color-accent-gold);' : '' }, p.name),
+                    isMe ? h('span', { className: 'badge-me', style: 'margin-left: 0.5rem;' }, 'Bạn') : null
                   ),
-                  renderStatusBadge(p.status),
-                  p.deposit_deadline && p.status === PARTICIPANT_STATUS.PENDING_DEPOSIT
-                    ? renderCountdown(p.deposit_deadline, { label: 'Hạn cọc', showIcon: false })
-                    : null
+                  h('div', { style: 'display: flex; gap: 0.6rem; align-items: center;' },
+                    renderStatusBadge(p.status),
+                    p.deposit_deadline && p.status === PARTICIPANT_STATUS.PENDING_DEPOSIT
+                      ? renderCountdown(p.deposit_deadline, { label: 'Hạn cọc', showIcon: false })
+                      : null
+                  )
                 );
               })
             )
           )
         ),
 
-        // Right Column: Action Panel & Price Breakdown
-        h('div', { className: 'showcase-right-col' },
-          // Actions Card
-          h('div', { className: 'actions-card card-dark p-3 mb-3' },
-            h('h3', { className: 'card-title mb-2' }, 'Thao Tác Của Bạn'),
+        // Right Column: Action Terminal, Transparent Receipt, and Refund Policy
+        h('div', {},
+          // Action Terminal
+          h('div', { style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-hairline); border-radius: var(--radius-xs); padding: 1.75rem; margin-bottom: 1.5rem;' },
+            h('h3', { className: 'charter-title', style: 'font-size: 1.35rem; margin-bottom: 1rem;' }, 'Bảng Điều Khiển Của Bạn'),
             this.renderActionButtons(myPart, isCreator, game)
           ),
 
-          // Price Breakdown (Per-Person & Room)
-          renderPriceBreakdown(this.quoteSnapshot, { showPerPersonOnly: true, title: 'Chiết tính phần vé của bạn' }),
+          // Price Breakdown (Per-person transparent receipt)
+          renderPriceBreakdown(this.quoteSnapshot, { showPerPersonOnly: true, title: 'Bóc Tách Phần Vé Của Bạn' }),
 
-          // Refund Policy Info Note
-          h('div', { className: 'refund-policy-box card-dark p-3 mt-3' },
-            h('h4', { className: 'policy-title highlight-gold' }, renderIcon('shield'), ' Chính Sách Hoàn Cọc (V16 Freeze)'),
-            h('p', { className: 'text-muted', style: { fontSize: '0.85rem' } },
-              'Theo quy định: Người chơi chỉ đủ điều kiện xét hoàn cọc 50.000 VNĐ khi gửi yêu cầu hủy trước giờ bắt đầu ít nhất 24 giờ. Quyết định hoàn cọc do Ban Quản Trị xem xét và xử lý.'
+          // Strict 24h Refund Charter Banner
+          h('div', { style: 'background: var(--color-bg-surface-1); border-left: 3px solid var(--color-accent-crimson); padding: 1.25rem; margin-top: 1.5rem; border-radius: var(--radius-xs);' },
+            h('h4', { className: 'highlight-gold mb-1', style: 'font-size: 0.95rem;' },
+              renderIcon('shield'), ' Quy Tắc Hoàn Cọc (V16 Freeze)'
+            ),
+            h('p', { className: 'text-muted', style: 'font-size: 0.82rem; line-height: 1.6; margin: 0;' },
+              'Người chơi chỉ đủ điều kiện xét hoàn khoản cọc 50.000 VNĐ khi chủ động gửi yêu cầu xin rời phòng trước giờ bắt đầu của ca chơi ít nhất 24 giờ. Quyết định hoàn cọc sẽ được Ban Quản Trị thẩm định và ghi chú mã tham chiếu giao dịch rõ ràng.'
             )
           )
         )
       );
-      container.appendChild(mainGrid);
 
+      container.appendChild(mainGrid);
       this.mountPoint.appendChild(container);
+
     } catch (err) {
       container.appendChild(
         h('div', { className: 'error-state text-center' },
           h('p', { className: 'text-danger' }, err.message),
-          h('a', { className: 'btn btn-secondary', href: '#/player/dashboard' }, 'Về danh sách phòng')
+          h('a', { className: 'btn btn-secondary', href: '#/player/dashboard' }, 'Về danh sách vụ án')
         )
       );
       this.mountPoint.appendChild(container);
     }
   }
 
-  // --- Schedule Proposal Banner ---
+  // --- Schedule Proposal Voting Card ---
   renderScheduleProposalCard(proposal) {
     const user = auth.getUser();
     const myVote = proposal.votes[user?.id];
 
-    return h('div', { className: 'schedule-proposal-card card-dark' },
-      h('div', { className: 'proposal-header flex-between' },
+    return h('div', { style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-accent-gold); padding: 1.75rem; border-radius: var(--radius-xs); margin-bottom: 2rem;' },
+      h('div', { className: 'flex-between mb-2', style: 'flex-wrap: wrap; gap: 1rem;' },
         h('div', {},
-          h('span', { className: 'badge-proposal' }, 'ĐỀ XUẤT ĐỔI LỊCH MỚI'),
-          h('h3', { className: 'proposal-title' }, `Dời lịch sang: ${formatDateTime(proposal.proposed_time)}`)
+          h('span', { className: 'dossier-badge-pill' }, 'ĐỀ XUẤT ĐỔI LỊCH MỚI'),
+          h('h3', { style: 'font-size: 1.5rem; color: var(--color-text-gold);' },
+            `Đề xuất dời lịch sang: ${formatDateTime(proposal.proposed_time)}`
+          )
         ),
         renderCountdown(proposal.deadline, { label: 'Hạn biểu quyết (2h)' })
       ),
-      h('p', { className: 'text-muted' },
-        'Quy định: Cần 100% thành viên đang active đồng ý để chốt lịch mới. Nếu có 1 người từ chối hoặc hết thời hạn 2 giờ, đề xuất sẽ bị bác bỏ và giữ nguyên lịch cũ.'
+      h('p', { className: 'text-muted', style: 'font-size: 0.9rem; line-height: 1.6;' },
+        'Quy định V16: Yêu cầu 100% thám tử đang hoạt động đồng ý trong hạn 2 giờ. Nếu có 1 người từ chối hoặc hết thời hạn, đề xuất sẽ bị hủy bỏ và giữ nguyên lịch cũ.'
       ),
-      h('div', { className: 'proposal-actions mt-3' },
+      h('div', { style: 'margin-top: 1.25rem;' },
         myVote
-          ? h('div', { className: 'text-emerald' }, `✓ Bạn đã bỏ phiếu: ${myVote === 'ACCEPTED' ? 'ĐỒNG Ý' : 'TỪ CHỐI'}`)
-          : h('div', { className: 'vote-btns' },
+          ? h('div', { className: 'text-emerald', style: 'font-weight: 600;' },
+              `✓ Bạn đã bỏ phiếu: ${myVote === 'ACCEPTED' ? 'ĐỒNG Ý DỜI LỊCH' : 'TỪ CHỐI (GIỮ LỊCH CŨ)'}`
+            )
+          : h('div', { style: 'display: flex; gap: 1rem;' },
               h('button', {
-                className: 'btn btn-primary mr-2',
+                className: 'btn btn-primary',
                 onclick: () => this.handleVoteProposal('ACCEPTED'),
-              }, 'Đồng ý dời lịch'),
+              }, 'Đồng Ý Dời Lịch'),
               h('button', {
                 className: 'btn btn-secondary',
                 onclick: () => this.handleVoteProposal('REJECTED'),
-              }, 'Từ chối (Giữ lịch cũ)')
+              }, 'Từ Chối (Giữ Lịch Cũ)')
             )
       )
     );
   }
 
-  // --- Dynamic Action Buttons ---
+  // --- Context-Sensitive Action Buttons ---
   renderActionButtons(myPart, isCreator, game) {
-    const box = h('div', { className: 'action-buttons-group' });
-    const user = auth.getUser();
+    const box = h('div', { style: 'display: flex; flex-direction: column; gap: 0.75rem;' });
     const room = this.room;
 
     // Case 1: Chưa tham gia phòng
@@ -222,60 +240,60 @@ export class PlayerRoomDetailPage {
         h('button', {
           className: 'btn btn-primary btn-block btn-lg',
           onclick: () => this.handleJoin(),
-        }, renderIcon('plus'), ' Tham Gia Ghế Trống Này')
+        }, renderIcon('plus'), ' Tiếp Nhận Ghế Trống Này')
       );
       return box;
     }
 
-    // Case 2: Đang PENDING_DEPOSIT
+    // Case 2: Đang chờ cọc (PENDING_DEPOSIT)
     if (myPart.status === PARTICIPANT_STATUS.PENDING_DEPOSIT) {
       if (room.status === GAMEROOM_STATUS.WAITING_FOR_DEPOSIT) {
         box.appendChild(
           h('button', {
-            className: 'btn btn-primary btn-block btn-lg mb-2',
+            className: 'btn btn-primary btn-block btn-lg',
             onclick: () => this.openDepositModal(),
           }, renderIcon('creditCard'), ' Đặt Cọc 50.000 VNĐ Giữ Ghế')
         );
       } else {
         box.appendChild(
-          h('div', { className: 'status-hint-text text-muted mb-2' },
-            'Ghế của bạn đã giữ chỗ. Đang chờ Quản trị viên phân công Quản trò và mở thời hạn cọc.'
+          h('div', { className: 'promo-rules-box' },
+            'Ghế của bạn đã được giữ. Vui lòng chờ Ban Quản Trị chỉ định Quản trò và mở thời hạn đặt cọc 2 giờ.'
           )
         );
       }
 
-      // Rời phòng trước khi cọc (không mất cọc)
+      // Rời phòng trước khi cọc
       box.appendChild(
         h('button', {
           className: 'btn btn-secondary btn-block',
           onclick: () => this.handleLeaveBeforeDeposit(),
-        }, 'Rời phòng (Hủy giữ ghế)')
+        }, 'Rời Khỏi Phòng (Hủy Giữ Ghế)')
       );
       return box;
     }
 
-    // Case 3: Đã cọc (DEPOSITED)
+    // Case 3: Đã cọc thành công (DEPOSITED)
     if (myPart.status === PARTICIPANT_STATUS.DEPOSITED) {
       box.appendChild(
-        h('div', { className: 'deposit-success-badge text-emerald mb-2' },
-          renderIcon('check'), ' Bạn đã hoàn tất cọc 50.000 VNĐ giữ ghế an toàn.'
+        h('div', { style: 'background: rgba(63, 168, 136, 0.12); border: 1px solid var(--color-status-emerald); padding: 0.85rem; border-radius: var(--radius-xs); color: #72D2B5; font-size: 0.9rem;' },
+          renderIcon('check'), ' Bạn đã hoàn tất ký thác 50.000 VNĐ giữ ghế an toàn.'
         )
       );
 
       // Xin rời phòng sau cọc (Reason Dialog + xét hoàn cọc 24h)
       box.appendChild(
         h('button', {
-          className: 'btn btn-secondary btn-block text-danger mb-2',
+          className: 'btn btn-secondary btn-block text-danger',
           onclick: () => this.handleRequestLeaveAfterDeposit(),
-        }, 'Gửi yêu cầu xin rời phòng (Xét hoàn cọc)')
+        }, 'Gửi Yêu Cầu Xin Rời Phòng (Xét Hoàn Cọc)')
       );
 
-      // Thanh toán khoản còn lại (Mock)
+      // Thanh toán khoản còn lại tại quán
       box.appendChild(
         h('button', {
           className: 'btn btn-secondary btn-block',
-          onclick: () => showToast('Bạn có thể thanh toán khoản còn lại trực tiếp tại quầy quán khi đến chơi.', 'info'),
-        }, 'Thanh toán phần còn lại tại quán')
+          onclick: () => showToast('Bạn có thể thanh toán số tiền còn lại trực tiếp tại quầy quán khi đến chơi.', 'info'),
+        }, 'Thanh Toán Khoản Còn Lại Tại Quán')
       );
       return box;
     }
@@ -283,8 +301,8 @@ export class PlayerRoomDetailPage {
     // Case 4: Đã gửi yêu cầu rời phòng
     if (myPart.status === PARTICIPANT_STATUS.LEAVE_REQUESTED) {
       box.appendChild(
-        h('div', { className: 'alert-box text-amber' },
-          'Bạn đã gửi yêu cầu rời phòng. Ban Quản Trị đang xem xét lý do và đối chiếu mốc 24h để quyết định hoàn cọc.'
+        h('div', { className: 'promo-rules-box text-amber', style: 'border-color: var(--color-status-amber);' },
+          'Bạn đã gửi yêu cầu xin rời phòng. Ban Quản Trị đang thẩm định lý do và đối chiếu mốc 24 giờ để ra quyết định hoàn cọc.'
         )
       );
       return box;
@@ -293,11 +311,11 @@ export class PlayerRoomDetailPage {
     return box;
   }
 
-  // --- Action Handlers ---
+  // --- Handlers ---
   async handleJoin() {
     try {
       await apiService.joinRoom(this.room.id);
-      showToast('Tham gia phòng thành công!', 'success');
+      showToast('Tiếp nhận ghế thành công!', 'success');
       this.render();
     } catch (err) {
       showToast(err.message, 'error');
@@ -311,19 +329,19 @@ export class PlayerRoomDetailPage {
 
   handleRequestLeaveAfterDeposit() {
     showReasonDialog({
-      title: 'Yêu cầu xin rời phòng & hoàn cọc',
+      title: 'Yêu Cầu Xin Rời Phòng & Xét Hoàn Cọc (V16)',
       actionKey: 'PLAYER_REQUEST_LEAVE',
-      placeholder: 'Vui lòng cung cấp lý do bạn cần hủy tham gia phiên chơi...',
-      confirmLabel: 'Gửi yêu cầu tới Admin',
-      onSubmit: (reason) => {
-        showToast('Đã gửi yêu cầu xin rời phòng tới Quản trị viên.', 'success');
+      placeholder: 'Cung cấp lý do bạn cần hủy ca chơi để Ban Quản Trị đối chiếu mốc 24 giờ...',
+      confirmLabel: 'Gửi Yêu Cầu Tới Admin',
+      onSubmit: () => {
+        showToast('Đã gửi yêu cầu xin rời phòng tới Ban Quản Trị.', 'success');
         this.render();
       },
     });
   }
 
   handleVoteProposal(vote) {
-    showToast(`Đã ghi nhận phiếu ${vote === 'ACCEPTED' ? 'ĐỒNG Ý' : 'TỪ CHỐI'} dời lịch.`, 'success');
+    showToast(`Đã ghi nhận phiếu ${vote === 'ACCEPTED' ? 'ĐỒNG Ý' : 'TỪ CHỐI'} dời lịch của bạn.`, 'success');
     this.render();
   }
 
@@ -332,41 +350,43 @@ export class PlayerRoomDetailPage {
       navigator.clipboard.writeText(window.location.href);
       showToast('Đã sao chép liên kết phòng vào bộ nhớ tạm!', 'success');
     } else {
-      showToast(`Link phòng: ${window.location.href}`, 'info');
+      showToast(`Mã phòng: ${this.room.code}`, 'info');
     }
   }
 
   handleDeadlineExpired() {
-    showToast('Thời hạn gom người của phòng đã kết thúc.', 'error');
+    showToast('Thời hạn chiêu mộ 4 giờ của phòng đã kết thúc.', 'error');
     this.render();
   }
 
   handleDepositDeadlineExpired() {
-    showToast('Thời hạn đặt cọc của bạn đã hết hạn. Ghế đã bị hủy.', 'error');
+    showToast('Thời hạn đặt cọc 2 giờ của bạn đã hết. Ghế đã bị hủy.', 'error');
     this.render();
   }
 
-  // --- Mock Deposit Modal ---
+  // --- Mock Deposit Luxury Voucher Modal ---
   openDepositModal() {
     let depositModalInstance = null;
     let isSubmitting = false;
     const idempotencyKey = getIdempotencyKey(`deposit_${this.room.id}_${auth.getUser()?.id}`);
 
-    const modalBody = h('div', { className: 'deposit-modal-content' },
+    const modalBody = h('div', {},
       h('div', { className: 'deposit-voucher-preview' },
         h('div', { className: 'voucher-watermark' }, 'MÔ PHỎNG'),
-        h('h4', { className: 'voucher-title' }, 'PHIẾU ĐẶT CỌC GIỮ GHẾ'),
-        h('p', { className: 'voucher-room text-muted' }, `Phòng: ${this.room.code} • Kịch bản: ${this.room.game_details.title}`),
+        h('h4', { className: 'voucher-title' }, 'PHIẾU KÝ THÁC GIỮ GHẾ THÁM TỬ'),
+        h('p', { className: 'text-muted font-mono', style: 'font-size: 0.85rem; margin-bottom: 1rem;' },
+          `PHÒNG: ${this.room.code} • KỊCH BẢN: ${this.room.game_details.title}`
+        ),
         h('div', { className: 'voucher-amount-box' },
-          h('span', { className: 'voucher-label' }, 'Số tiền cọc quy định:'),
+          h('span', { className: 'text-muted font-mono', style: 'font-size: 0.78rem; text-transform: uppercase;' }, 'Số Tiền Cọc Quy Định (V16 Freeze):'),
           h('span', { className: 'voucher-amount highlight-gold' }, '50.000 VNĐ')
         ),
-        h('p', { className: 'voucher-policy text-muted', style: { fontSize: '0.8rem' } },
-          'Tiền cọc cố định, không tính theo phần trăm và được trừ trực tiếp vào tổng bill khi đến quán chơi.'
+        h('p', { className: 'text-muted', style: 'font-size: 0.8rem; line-height: 1.5; margin: 0;' },
+          'Tiền cọc cố định, không tính theo phần trăm và được khấu trừ trực tiếp vào hóa đơn khi đến quán tham gia phiên chơi.'
         )
       ),
 
-      h('div', { className: 'modal-footer-actions mt-3 flex-between' },
+      h('div', { className: 'flex-between', style: 'padding-top: 1.25rem; border-top: 1px solid var(--color-noir-divider);' },
         h('button', {
           className: 'btn btn-secondary',
           onclick: () => depositModalInstance.close(),
@@ -375,30 +395,35 @@ export class PlayerRoomDetailPage {
           id: 'btn-confirm-deposit',
           className: 'btn btn-primary btn-lg',
           onclick: async () => {
-            if (isSubmitting) return; // Prevent double-submit
+            if (isSubmitting) return;
             isSubmitting = true;
             const btn = document.getElementById('btn-confirm-deposit');
-            if (btn) { btn.disabled = true; btn.textContent = 'Đang xử lý cọc...'; }
+            if (btn) {
+              btn.disabled = true;
+              btn.textContent = 'Đang niêm phong tiền cọc...';
+            }
 
             try {
               await apiService.makeDeposit(this.room.id, idempotencyKey);
-              showToast('Hoàn tất đặt cọc 50.000 VNĐ mô phỏng thành công!', 'success');
+              showToast('Hoàn tất đặt cọc 50.000 VNĐ giữ ghế thành công!', 'success');
               depositModalInstance.close();
               this.render();
             } catch (err) {
               showToast(`Đặt cọc thất bại: ${err.message}`, 'error');
-              if (btn) { btn.disabled = false; btn.textContent = 'Xác nhận cọc 50.000 VNĐ'; }
+              if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Xác nhận cọc 50.000 VNĐ';
+              }
               isSubmitting = false;
             }
           },
-        }, 'Xác nhận cọc 50.000 VNĐ (Mô phỏng)')
+        }, 'Xác Nhận Ký Thác 50.000 VNĐ (Mô Phỏng)')
       )
     );
 
     depositModalInstance = new Modal({
-      title: 'Thanh Toán Đặt Cọc Giữ Chỗ (Mô Phỏng)',
+      title: 'Ký Thác Đặt Cọc Giữ Chỗ (Mô Phỏng V16)',
       contentEl: modalBody,
-      className: 'modal-deposit-simulate',
     });
 
     depositModalInstance.open();

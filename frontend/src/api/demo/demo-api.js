@@ -143,11 +143,15 @@ export const demoApi = {
     const game = sharedStore.data.games.find((g) => g.id === payload.game_id);
     if (!game) throw new Error('Kịch bản không hợp lệ.');
 
+    const isStudent = payload.is_student_verified !== undefined
+      ? payload.is_student_verified
+      : (user?.student_verified || false);
+
     const quoteResult = simulateQuote({
       game,
       sessionStartTime: payload.session_start_time,
       playerCount: payload.player_count || game.min_players,
-      isStudentVerified: user?.student_verified || false,
+      isStudentVerified: isStudent,
     });
 
     return {

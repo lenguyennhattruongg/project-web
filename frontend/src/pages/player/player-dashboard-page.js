@@ -1,6 +1,6 @@
 /**
  * Player Dashboard Page (#/player/dashboard)
- * Shows user's active GameRooms, next critical deadline, active quota (X/3), and quick alerts.
+ * Detective Dossier & Command Desk: Integrated Metrics Strip, Active Cases Ledger, and Asymmetric Layout.
  */
 import { h, renderIcon } from '../../utils/dom.js';
 import { apiService } from '../../api/api-service.js';
@@ -25,31 +25,34 @@ export class PlayerDashboardPage {
       return;
     }
 
-    // 1. Dashboard Header
-    const header = h('div', { className: 'dashboard-header flex-between' },
+    // 1. Detective Dossier Header
+    const header = h('div', { className: 'player-dossier-hero flex-between' },
       h('div', {},
-        h('h1', { className: 'dashboard-title' }, `Xin chào, ${user.name.split(' ')[0]}!`),
-        h('p', { className: 'dashboard-subtitle text-muted' },
-          'Quản lý các phòng chơi bạn đang tham gia hoặc khởi tạo.'
+        h('span', { className: 'dossier-badge-pill' },
+          renderIcon('shield'), ' HỒ SƠ ĐIỀU TRA VIÊN • SALON PRIVÉ'
+        ),
+        h('h1', { className: 'player-desk-title' }, `Bàn Làm Việc: ${user.name}`),
+        h('p', { className: 'text-muted' },
+          'Theo dõi tiến trình các vụ án đang tham gia, thời hạn thành lập và đếm ngược đặt cọc.'
         )
       ),
       h('div', { className: 'dashboard-header-actions' },
-        h('a', { className: 'btn btn-primary', href: '#/player/create-room' },
-          renderIcon('plus'), ' Mở Phòng Chơi Mới'
+        h('a', { className: 'btn btn-primary btn-lg', href: '#/player/create-room' },
+          renderIcon('plus'), ' Khởi Tạo Vụ Án Mới'
         )
       )
     );
     container.appendChild(header);
 
-    // 2. Metrics & Quota Overview (X/3 rooms)
-    this.metricsContainer = h('div', { className: 'dashboard-metrics-grid' },
-      h('div', { className: 'loading-pulse' }, 'Đang tính toán hạn chót và hạn ngạch phòng...')
+    // 2. Integrated Metrics Strip
+    this.metricsContainer = h('div', { className: 'dossier-metrics-strip' },
+      h('div', { className: 'loading-pulse', style: 'padding: 1.5rem;' }, 'Đang giải mã hạn ngạch và hồ sơ...')
     );
     container.appendChild(this.metricsContainer);
 
-    // 3. Rooms Feed (My Created & Joined Rooms)
-    this.roomsContainer = h('div', { className: 'my-rooms-section mt-4' });
-    container.appendChild(this.roomsContainer);
+    // 3. Main 2-Column Desk Layout
+    this.mainDeskContainer = h('div', { className: 'player-desk-grid' });
+    container.appendChild(this.mainDeskContainer);
 
     this.mountPoint.appendChild(container);
 
@@ -68,110 +71,166 @@ export class PlayerDashboardPage {
         r.participants.some((p) => p.user_id === user.id && !['LEFT', 'CANCELLED_UNPAID', 'CANCELLED_BY_ADMIN'].includes(p.status))
       );
 
-      // Quota: Created active rooms (max 3)
+      // Quota: Created active rooms (max 3 per V16 Freeze)
       const myCreatedActive = allRooms.filter(
         (r) => r.creator_id === user.id && !['COMPLETED', 'EXPIRED', 'CANCELLED'].includes(r.status)
       );
 
-      // Render Metrics
+      // Populate Integrated Metrics Strip
       this.metricsContainer.innerHTML = '';
-      this.metricsContainer.appendChild(
-        h('div', { className: 'metric-card card-dark' },
-          h('span', { className: 'metric-label text-muted' }, 'Phòng bạn đã mở:'),
-          h('div', { className: 'metric-value' },
-            h('strong', { className: myCreatedActive.length >= 3 ? 'text-danger' : 'highlight-gold' },
-              `${myCreatedActive.length}`
-            ),
-            h('span', { className: 'metric-sub' }, ' / 3 tối đa')
+
+      // Strip 1: Quota
+      const quotaItem = h('div', { className: 'metric-strip-item' },
+        h('span', { className: 'metric-strip-label' }, 'Hạn ngạch mở phòng (V16)'),
+        h('div', { className: 'metric-strip-val' },
+          h('span', { className: myCreatedActive.length >= 3 ? 'text-danger' : 'highlight-gold' },
+            `${myCreatedActive.length}`
           ),
-          h('p', { className: 'metric-hint text-muted' }, 'Mỗi người chơi được mở tối đa 3 phòng đang hoạt động cùng lúc.')
+          h('span', { className: 'metric-strip-sub' }, ' / 3 phòng tối đa')
+        ),
+        h('span', { className: 'text-muted', style: 'font-size: 0.75rem; margin-top: 0.25rem;' },
+          myCreatedActive.length >= 3 ? 'Đã đạt giới hạn tối đa' : `Còn được mở thêm ${3 - myCreatedActive.length} phòng`
         )
       );
+      this.metricsContainer.appendChild(quotaItem);
 
-      this.metricsContainer.appendChild(
-        h('div', { className: 'metric-card card-dark' },
-          h('span', { className: 'metric-label text-muted' }, 'Phòng đang tham gia:'),
-          h('div', { className: 'metric-value' },
-            h('strong', {}, String(myRooms.length)),
-            h('span', { className: 'metric-sub' }, ' phòng')
-          ),
-          h('p', { className: 'metric-hint text-muted' }, 'Bao gồm các phòng đang tuyển, chờ cọc và đã sẵn sàng.')
+      // Strip 2: Active Enlistments
+      const activeItem = h('div', { className: 'metric-strip-item' },
+        h('span', { className: 'metric-strip-label' }, 'Vụ án đang tham gia'),
+        h('div', { className: 'metric-strip-val' },
+          h('span', { className: 'text-light' }, String(myRooms.length)),
+          h('span', { className: 'metric-strip-sub' }, ' phòng đang hoạt động')
+        ),
+        h('span', { className: 'text-muted', style: 'font-size: 0.75rem; margin-top: 0.25rem;' },
+          'Bao gồm đang tuyển, chờ cọc và chuẩn bị chơi'
         )
       );
+      this.metricsContainer.appendChild(activeItem);
 
-      this.metricsContainer.appendChild(
-        h('div', { className: 'metric-card card-dark' },
-          h('span', { className: 'metric-label text-muted' }, 'Hồ sơ học sinh - sinh viên:'),
-          h('div', { className: 'metric-value' },
-            user.student_verified
-              ? h('span', { className: 'badge-verified text-emerald' }, '✓ Đã xác minh HSSV')
-              : h('span', { className: 'badge-unverified text-muted' }, 'Chưa đăng ký HSSV')
-          ),
-          h('p', { className: 'metric-hint text-muted' },
-            user.student_verified
-              ? 'Áp dụng giảm 20.000đ/người từ Thứ 2 đến Thứ 5 (09:00–19:00).'
-              : 'Xác minh tại quán để hưởng ưu đãi HSSV.'
-          )
+      // Strip 3: Student Verification
+      const studentItem = h('div', { className: 'metric-strip-item' },
+        h('span', { className: 'metric-strip-label' }, 'Chứng chỉ Học sinh - Sinh viên'),
+        h('div', { className: 'metric-strip-val' },
+          user.student_verified
+            ? h('span', { className: 'text-emerald', style: 'font-size: 1.15rem; font-weight: 600;' }, '✓ ĐÃ XÁC MINH HSSV')
+            : h('span', { className: 'text-muted', style: 'font-size: 1.15rem;' }, 'CHƯA ĐĂNG KÝ HSSV')
+        ),
+        h('span', { className: 'text-muted', style: 'font-size: 0.75rem; margin-top: 0.25rem;' },
+          user.student_verified
+            ? 'Tự động giảm 20.000đ/người từ Thứ 2 đến Thứ 5 (09:00–19:00)'
+            : 'Xuất trình thẻ tại quầy quán để mở khóa ưu đãi'
         )
       );
+      this.metricsContainer.appendChild(studentItem);
 
-      // Render Rooms
-      this.roomsContainer.innerHTML = '';
-      this.roomsContainer.appendChild(
-        h('h2', { className: 'section-title mb-3' }, `Danh Sách Phòng Của Bạn (${myRooms.length})`)
+      // Populate Main 2-Column Desk
+      this.mainDeskContainer.innerHTML = '';
+
+      // Left Column: Active Cases
+      const leftCol = h('div', { className: 'desk-left-col' },
+        h('div', { className: 'cases-ledger-header' },
+          h('h2', { className: 'cases-ledger-title' }, `Hồ Sơ Các Vụ Án Của Bạn (${myRooms.length})`),
+          h('span', { className: 'font-mono text-muted', style: 'font-size: 0.8rem;' }, 'DANH SÁCH THỜI GIAN THỰC')
+        )
       );
 
       if (myRooms.length === 0) {
-        this.roomsContainer.appendChild(
-          h('div', { className: 'empty-state card-dark text-center' },
-            h('p', { className: 'text-muted' }, 'Bạn chưa tham gia hoặc tạo phòng chơi nào.'),
-            h('div', { className: 'mt-3' },
-              h('a', { className: 'btn btn-primary mr-2', href: '#/player/create-room' }, 'Tạo phòng mới'),
-              h('a', { className: 'btn btn-secondary', href: '#/rooms' }, 'Khám phá phòng đang mở')
+        leftCol.appendChild(
+          h('div', { className: 'empty-state text-center', style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-subtle); padding: 3rem 1.5rem; border-radius: var(--radius-xs);' },
+            h('p', { className: 'text-muted', style: 'font-size: 1.05rem; margin-bottom: 1.5rem;' },
+              'Bạn chưa tham gia hoặc khởi tạo phòng chơi nào.'
+            ),
+            h('div', { style: 'display: flex; gap: 1rem; justify-content: center;' },
+              h('a', { className: 'btn btn-primary', href: '#/player/create-room' }, 'Khởi tạo phòng mới'),
+              h('a', { className: 'btn btn-secondary', href: '#/rooms' }, 'Khám phá phòng đang chiêu mộ')
             )
           )
         );
-        return;
-      }
+      } else {
+        const caseList = h('div', { className: 'cases-list' });
+        for (const room of myRooms) {
+          const gameRes = await apiService.getGameById(room.game_id);
+          const game = gameRes.data;
+          const isCreator = room.creator_id === user.id;
+          const myPart = room.participants.find((p) => p.user_id === user.id);
 
-      const grid = h('div', { className: 'my-rooms-grid' });
-      for (const room of myRooms) {
-        const gameRes = await apiService.getGameById(room.game_id);
-        const game = gameRes.data;
-        const isCreator = room.creator_id === user.id;
-
-        const card = h('div', { className: 'room-card card-dark' },
-          h('div', { className: 'room-card-header' },
-            h('div', { className: 'code-tag-group' },
-              h('span', { className: 'room-code' }, room.code),
-              isCreator ? h('span', { className: 'badge-creator' }, 'Chủ phòng') : null
+          const item = h('div', { className: 'case-dossier-item' },
+            h('div', { className: 'case-dossier-header' },
+              h('div', { style: 'display: flex; gap: 0.75rem; align-items: center;' },
+                h('span', { className: 'room-code' }, room.code),
+                isCreator ? h('span', { className: 'badge-creator' }, 'Chủ phòng') : null,
+                myPart ? renderStatusBadge(myPart.status) : null
+              ),
+              renderStatusBadge(room.status)
             ),
-            renderStatusBadge(room.status)
-          ),
-          h('h3', { className: 'room-game-title' },
-            h('a', { href: `#/player/rooms/${room.id}` }, game.title)
-          ),
-          h('div', { className: 'room-meta text-muted' },
-            h('div', {}, renderIcon('calendar'), ' Giờ chơi: ', h('strong', {}, formatDateTime(room.session_start_time))),
-            h('div', {}, renderIcon('users'), ` Thành viên: ${room.participants.length}/${game.max_players} người`)
-          ),
-          room.formation_deadline && room.status === 'FORMING'
-            ? h('div', { className: 'room-deadline-box' },
-                renderCountdown(room.formation_deadline, { label: 'Hạn gom người' })
+            h('h3', { className: 'case-dossier-title' },
+              h('a', { href: `#/player/rooms/${room.id}` }, game.title)
+            ),
+            h('div', { className: 'case-dossier-meta' },
+              h('span', {}, renderIcon('calendar'), ' Khởi hành: ', h('strong', { className: 'text-gold' }, formatDateTime(room.session_start_time))),
+              h('span', {}, renderIcon('users'), ` ${room.participants.length}/${game.max_players} thám tử`),
+              h('span', {}, renderIcon('shield'), room.dm_assignment ? `DM: ${room.dm_assignment.dm_name}` : 'Chưa xếp DM')
+            ),
+            // Countdown Tickers
+            room.formation_deadline && room.status === 'FORMING'
+              ? h('div', { style: 'margin-bottom: 0.75rem;' },
+                  renderCountdown(room.formation_deadline, { label: 'Hạn thành lập phòng (4h)' })
+                )
+              : null,
+            myPart?.deposit_deadline && myPart.status === 'PENDING_DEPOSIT' && room.status === 'WAITING_FOR_DEPOSIT'
+              ? h('div', { style: 'margin-bottom: 0.75rem;' },
+                  renderCountdown(myPart.deposit_deadline, { label: 'Hạn đặt cọc 50.000đ của bạn (2h)' })
+                )
+              : null,
+            h('div', { className: 'case-dossier-footer' },
+              h('span', { className: 'text-muted font-mono', style: 'font-size: 0.78rem;' },
+                room.physical_room ? `Phòng: ${room.physical_room.name}` : 'Mật thất: Chờ Admin ấn định'
+              ),
+              h('a', { className: 'btn btn-primary btn-sm', href: `#/player/rooms/${room.id}` },
+                'Vào Vụ Án →'
               )
-            : null,
-          h('div', { className: 'room-card-footer flex-between mt-3' },
-            h('span', { className: 'text-muted', style: { fontSize: '0.85rem' } },
-              room.dm_assignment ? `DM: ${room.dm_assignment.dm_name}` : 'Chưa xếp DM'
-            ),
-            h('a', { className: 'btn btn-primary btn-sm', href: `#/player/rooms/${room.id}` }, 'Vào phòng chi tiết →')
-          )
-        );
-        grid.appendChild(card);
+            )
+          );
+          caseList.appendChild(item);
+        }
+        leftCol.appendChild(caseList);
       }
-      this.roomsContainer.appendChild(grid);
+      this.mainDeskContainer.appendChild(leftCol);
+
+      // Right Column: Detective Guidance & Quick Links
+      const rightCol = h('div', { className: 'desk-right-col' },
+        h('div', { className: 'cases-ledger-header' },
+          h('h3', { className: 'cases-ledger-title' }, 'Cẩm Nang Thao Tác'),
+          h('span', { className: 'font-mono text-gold', style: 'font-size: 0.8rem;' }, 'V16 RULES')
+        ),
+        h('div', { style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-hairline); padding: 1.5rem; border-radius: var(--radius-xs); margin-bottom: 1.5rem;' },
+          h('h4', { className: 'highlight-gold mb-2' }, renderIcon('shield'), ' Quy Tắc Ký Thác & Đổi Lịch'),
+          h('ul', { style: 'color: var(--color-text-secondary); font-size: 0.88rem; line-height: 1.7; padding-left: 1.25rem; margin: 0;' },
+            h('li', {}, 'Tiền cọc cố định ', h('strong', { className: 'text-gold' }, '50.000 VNĐ / người'), ', trừ trực tiếp vào bill khi tới quán.'),
+            h('li', {}, 'Mỗi người chơi có ', h('strong', {}, 'hạn cọc 2 giờ riêng'), ' sau khi phòng được Admin chốt DM và lịch.'),
+            h('li', {}, 'Hủy trước giờ chơi ', h('strong', { className: 'text-emerald' }, '≥ 24 giờ'), ' đủ điều kiện xét hoàn cọc.'),
+            h('li', {}, 'Đề xuất đổi lịch yêu cầu ', h('strong', {}, '100% thành viên'), ' đồng thuận trong hạn 2 giờ.')
+          )
+        ),
+        h('div', { style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-subtle); padding: 1.5rem; border-radius: var(--radius-xs);' },
+          h('h4', { style: 'font-size: 1.1rem; color: var(--color-text-primary); margin-bottom: 1rem;' }, 'Liên Kết Nhanh'),
+          h('div', { style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
+            h('a', { className: 'btn btn-secondary btn-block text-left', href: '#/games' },
+              renderIcon('search'), ' Tra cứu kho 42 kịch bản'
+            ),
+            h('a', { className: 'btn btn-secondary btn-block text-left', href: '#/player/history' },
+              renderIcon('clock'), ' Lịch sử cọc & hoàn tiền'
+            ),
+            h('a', { className: 'btn btn-secondary btn-block text-left', href: '#/player/notifications' },
+              renderIcon('bell'), ' Trung tâm thông báo & nhắc hẹn'
+            )
+          )
+        )
+      );
+      this.mainDeskContainer.appendChild(rightCol);
+
     } catch (err) {
-      this.roomsContainer.innerHTML = `<div class="error-state text-danger">${err.message}</div>`;
+      this.mainDeskContainer.innerHTML = `<div class="error-state text-danger">${err.message}</div>`;
     }
   }
 }

@@ -1130,6 +1130,293 @@ a:hover {
 }
 
 /* ==========================================================================
+   Player Portal — Detective Dossier & Command Desk
+   ========================================================================== */
+.player-dossier-hero {
+  padding: 2.5rem 0 1.5rem 0;
+  border-bottom: 1px solid var(--color-border-hairline);
+  margin-bottom: 2rem;
+}
+
+.dossier-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-accent-gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.player-desk-title {
+  font-size: 2.8rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+/* Integrated Metrics Strip (Replaces 3 isolated metric boxes) */
+.dossier-metrics-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-strip-item {
+  padding: 1.25rem 1.75rem;
+  border-right: 1px solid var(--color-noir-divider);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.metric-strip-item:last-child {
+  border-right: none;
+}
+
+.metric-strip-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.35rem;
+}
+
+.metric-strip-val {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.metric-strip-sub {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  font-weight: normal;
+}
+
+/* Asymmetric Player Desk Layout */
+.player-desk-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 2.5rem;
+  margin-bottom: 4rem;
+}
+
+.cases-ledger-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-noir-divider);
+  margin-bottom: 1.25rem;
+}
+
+.cases-ledger-title {
+  font-size: 1.35rem;
+  color: var(--color-text-primary);
+}
+
+.case-dossier-item {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+}
+.case-dossier-item:hover {
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.case-dossier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.case-dossier-title {
+  font-size: 1.35rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.case-dossier-meta {
+  display: flex;
+  gap: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.85rem;
+}
+
+.case-dossier-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-noir-divider);
+}
+
+/* Create Room Wizard Styling */
+.wizard-header-noir {
+  padding: 3rem 0 1.5rem 0;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border-hairline);
+  margin-bottom: 2rem;
+}
+
+.wizard-progress-noir {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.wizard-nav-list {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+}
+
+.wizard-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.wizard-nav-item.active {
+  color: var(--color-accent-gold);
+  font-weight: 600;
+}
+.wizard-nav-item.done {
+  color: var(--color-status-emerald);
+}
+
+.wizard-step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.wizard-nav-item.active .wizard-step-circle {
+  border-color: var(--color-accent-gold);
+  background: var(--color-accent-gold-subtle);
+  color: var(--color-accent-gold);
+}
+.wizard-nav-item.done .wizard-step-circle {
+  border-color: var(--color-status-emerald);
+  background: var(--color-status-emerald-bg);
+  color: var(--color-status-emerald);
+}
+
+.slots-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.btn-slot-choice {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-primary);
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--radius-xs);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-slot-choice:hover {
+  border-color: var(--color-accent-gold);
+}
+.btn-slot-choice.selected {
+  background: var(--color-accent-gold);
+  border-color: var(--color-accent-gold);
+  color: var(--color-text-inverse);
+}
+.btn-slot-choice.selected .slot-tier-tag {
+  color: rgba(7, 8, 10, 0.75);
+}
+
+.slot-time-text {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.slot-tier-tag {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+/* Mock Deposit Voucher */
+.deposit-voucher-preview {
+  background: #111319;
+  border: 2px dashed rgba(196, 163, 107, 0.35);
+  padding: 1.75rem;
+  position: relative;
+  border-radius: var(--radius-xs);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.voucher-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-25deg);
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: rgba(196, 163, 107, 0.05);
+  font-weight: 700;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.voucher-title {
+  font-size: 1.4rem;
+  color: var(--color-text-gold);
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.voucher-amount-box {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--color-border-hairline);
+  display: inline-block;
+  min-width: 240px;
+}
+
+.voucher-amount {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-accent-gold);
+  display: block;
+}
+
+/* ==========================================================================
    Room Detail Showcase & Round Table Ring
    ========================================================================== */
 .room-hero-card {
@@ -1333,6 +1620,25 @@ a:hover {
    Responsive Adaptations
    ========================================================================== */
 @media (max-width: 992px) {
+  .player-desk-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .dossier-metrics-strip {
+    grid-template-columns: 1fr;
+  }
+  .metric-strip-item {
+    border-right: none;
+    border-bottom: 1px solid var(--color-noir-divider);
+  }
+  .metric-strip-item:last-child {
+    border-bottom: none;
+  }
+  .wizard-nav-list {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
   .manifesto-grid {
     grid-template-columns: 1fr;
     gap: 2.5rem;
