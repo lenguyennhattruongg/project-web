@@ -2,19 +2,34 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=frontend/">
   <script>
-    // Giữ nguyên hash route nếu có (ví dụ: #/games, #/player/dashboard)
-    const hash = window.location.hash || '';
-    window.location.replace('frontend/' + hash);
+    (function() {
+      const origin = window.location.origin;
+      let pathname = window.location.pathname;
+      if (!pathname.endsWith('/')) {
+        pathname += '/';
+      }
+      const hash = window.location.hash || '';
+      window.location.replace(origin + pathname + 'frontend/' + hash);
+    })();
   </script>
+  <meta http-equiv="refresh" content="0; url=./frontend/">
   <title>Kịch Bản Sát V16 — Nền Tảng Đặt Lịch Chơi Jubensha Trực Tuyến</title>
 </head>
 <body style="background: #0B0C10; color: #C4A36B; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center;">
   <div>
     <h2>Kịch Bản Sát V16</h2>
-    <p style="color: #A0A5B5;">Đang chuyển hướng tới hệ thống giao diện...</p>
-    <p><a href="frontend/" style="color: #45A29E; text-decoration: none; font-weight: bold;">Nhấn vào đây nếu trang không tự động chuyển hướng</a></p>
+    <p style="color: #A0A5B5;">Đang chuyển hướng tới giao diện...</p>
+    <p><a id="redirect-link" href="./frontend/" style="color: #45A29E; text-decoration: none; font-weight: bold;">Nhấn vào đây để vào Trang Chủ</a></p>
   </div>
+  <script>
+    const link = document.getElementById('redirect-link');
+    if (link) {
+      const origin = window.location.origin;
+      let pathname = window.location.pathname;
+      if (!pathname.endsWith('/')) pathname += '/';
+      link.href = origin + pathname + 'frontend/' + (window.location.hash || '');
+    }
+  </script>
 </body>
 </html>

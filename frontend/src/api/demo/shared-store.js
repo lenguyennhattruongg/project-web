@@ -572,7 +572,9 @@ class SharedStore {
     }
 
     const hoursUntilSession = (new Date(room.session_start_time).getTime() - Date.now()) / (3600 * 1000);
-    const bufferViolated = hoursUntilSession < 12;
+    if (hoursUntilSession < 12) {
+      throw new Error(`Vi phạm quy tắc V16 Freeze: Quản trò bắt buộc có tối thiểu 12 giờ chuẩn bị trước ca chơi (khoảng đệm hiện tại: ${Math.round(hoursUntilSession * 10) / 10}h).`);
+    }
 
     room.assignment_history = room.assignment_history || [];
     room.dm_assignment = {
@@ -583,7 +585,7 @@ class SharedStore {
       assigned_at: new Date().toISOString(),
       assigned_by: adminActor?.name || 'Ban Quản Trị',
       prep_buffer_hours: Math.max(0, Math.round(hoursUntilSession * 10) / 10),
-      prep_buffer_warning: bufferViolated,
+      prep_buffer_warning: false,
     };
 
     this.data.notifications.unshift({
@@ -1029,8 +1031,11 @@ class SharedStore {
       if (room) {
         const hoursBeforeSession = (new Date(room.session_start_time).getTime() - new Date(refund.created_at).getTime()) / (3600 * 1000);
         const isEligible = hoursBeforeSession >= 24; // Exactly 24h qualifies
-        if (!isEligible && !reason.includes('ADMIN_POLICY_OVERRIDE')) {
-          throw new Error(`Theo quy định V16: Yêu cầu hủy dưới 24 giờ (${Math.round(hoursBeforeSession * 10) / 10}h trước ca) không đủ điều kiện xét hoàn cọc.`);
+        if (!isEligible) {
+          const hasValidOverride = adminActor && adminActor.override_decision_code && adminActor.role === 'ADMIN';
+          if (!hasValidOverride) {
+            throw new Error(`Theo quy định V16: Yêu cầu hủy dưới 24 giờ (${Math.round(hoursBeforeSession * 10) / 10}h trước ca) không đủ điều kiện xét hoàn cọc.`);
+          }
         }
       }
 
@@ -1112,6 +1117,31 @@ class SharedStore {
   adminUpdateUserRole(userId, newRole, adminActor = null) {
     if (!adminActor || adminActor.role !== 'ADMIN') {
       throw new Error('Chỉ Quản trị viên (ADMIN) mới có quyền thay đổi vai trò tài khoản.');
+    }
+
+    const validRoles = ['PLAYER', 'DM', 'ADMIN'];
+    if (!validRoles.includes(newRole)) {
+      throw new Error(`Vai trò "${newRole}" không hợp lệ. Các vai trò được chấp nhận: ${validRoles.join(', ')}.`);
+    }
+
+    if (!this.data.users) {
+      this.data.users = [
+        { id: 'user_player_01', name: 'Trường Nguyễn (Người chơi)', role: 'PLAYER' },
+        { id: 'user_dm_01', name: 'Hải Đăng (Quản trò)', role: 'DM' },
+        { id: 'user_admin_01', name: 'Ban Quản Trị Hệ Thống', role: 'ADMIN' },
+      ];
+    }
+
+    const targetUser = this.data.users.find((u) => u.id === userId);
+    if (targetUser && targetUser.role === 'ADMIN' && newRole !== 'ADMIN') {
+      const adminCount = this.data.users.filter((u) => u.role === 'ADMIN').length;
+      if (adminCount <= 1) {
+        throw new Error('Không thể hạ quyền Quản trị viên cuối cùng của hệ thống.');
+      }
+    }
+
+    if (targetUser) {
+      targetUser.role = newRole;
     }
 
     this.data.auditLogs.unshift({

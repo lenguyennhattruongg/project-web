@@ -73,6 +73,23 @@ describe('Admin Portal — Tactical Ops Center Logic Tests', () => {
       );
       assert.ok(audit, 'Audit log should record ADMIN_REVOKE_ASSIGNMENT');
     });
+
+    test('Enforces hard block on DM assignment if session start time < 12h', () => {
+      const urgentRoom = {
+        id: 'room_urgent_buffer',
+        code: 'BUF-001',
+        game_id: 'game_01',
+        session_start_time: new Date(Date.now() + 6 * 3600 * 1000).toISOString(), // 6h away < 12h
+        status: GAMEROOM_STATUS.WAITING_FOR_DM,
+        participants: [],
+      };
+      sharedStore.data.gameRooms.push(urgentRoom);
+
+      assert.throws(
+        () => sharedStore.adminAssignDm('room_urgent_buffer', 'user_dm_01', { id: 'admin1', name: 'Admin', role: 'ADMIN' }),
+        /Vi phạm quy tắc V16 Freeze: Quản trò bắt buộc có tối thiểu 12 giờ chuẩn bị/
+      );
+    });
   });
 
   describe('2. Physical Venue Scheduling, Capacity & 30-min Cleanup Buffer Conflicts', () => {
@@ -310,6 +327,20 @@ describe('Admin Portal — Tactical Ops Center Logic Tests', () => {
       );
       assert.ok(audit, 'Audit log should record UPDATE_USER_ROLE');
       assert.ok(audit.details.includes('sang vai trò DM'));
+    });
+
+    test('Validates role and prevents demoting last admin', () => {
+      // Invalid role throws
+      assert.throws(
+        () => sharedStore.adminUpdateUserRole('user_player_01', 'SUPERMAN', { id: 'admin1', name: 'Admin', role: 'ADMIN' }),
+        /không hợp lệ/
+      );
+
+      // Attempt to demote last admin throws
+      assert.throws(
+        () => sharedStore.adminUpdateUserRole('user_admin_01', 'PLAYER', { id: 'admin1', name: 'Admin', role: 'ADMIN' }),
+        /Không thể hạ quyền Quản trị viên cuối cùng/
+      );
     });
   });
 });
