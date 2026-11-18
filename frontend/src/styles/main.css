@@ -2010,6 +2010,211 @@ a:hover {
 }
 
 /* ==========================================================================
+   Admin Tactical Ops Center Styling
+   ========================================================================== */
+.tactical-badge-banner {
+  background: rgba(196, 163, 107, 0.05);
+  border: 1px solid rgba(196, 163, 107, 0.25);
+  border-radius: var(--radius-xs);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+.tactical-badge-tag {
+  color: var(--color-accent-gold);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tactical-badge-tag::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00E676;
+  box-shadow: 0 0 8px #00E676;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.admin-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-metrics-strip.strip-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.tactical-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-noir-divider);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.tactical-section-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.tactical-mono-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-gold);
+  letter-spacing: 1px;
+}
+
+.tactical-filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.tactical-filter-btn {
+  background: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+}
+.tactical-filter-btn:hover,
+.tactical-filter-btn.active {
+  background: rgba(196, 163, 107, 0.15);
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
+}
+
+.tactical-card {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.buffer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-xs);
+  font-weight: 600;
+}
+.buffer-pill.safe {
+  color: #81c784;
+  background: rgba(46, 125, 50, 0.15);
+  border: 1px solid rgba(46, 125, 50, 0.3);
+}
+.buffer-pill.warning {
+  color: #ffb74d;
+  background: rgba(245, 124, 0, 0.15);
+  border: 1px solid rgba(245, 124, 0, 0.3);
+}
+
+.conflict-alert-box {
+  background: rgba(216, 59, 64, 0.08);
+  border-left: 3px solid var(--color-status-danger);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  color: #FFA5A8;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.immutable-history-box {
+  background: #0E1015;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 1.25rem;
+  margin-top: 1rem;
+}
+.immutable-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed var(--color-noir-divider);
+  font-size: 0.85rem;
+}
+.immutable-history-item:last-child {
+  border-bottom: none;
+}
+
+.decision-7-banner {
+  background: rgba(196, 163, 107, 0.08);
+  border: 1px solid var(--color-accent-gold);
+  border-radius: var(--radius-xs);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.snapshot-guarantee-banner {
+  background: rgba(0, 230, 118, 0.06);
+  border-left: 3px solid #00E676;
+  padding: 0.9rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.admin-action-btn-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tactical-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.tactical-modal-dialog {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-accent-gold);
+  border-radius: var(--radius-xs);
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+}
+
+/* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
 @media (max-width: 992px) {
@@ -2022,7 +2227,9 @@ a:hover {
     gap: 2rem;
   }
   .dossier-metrics-strip,
-  .dm-metrics-strip {
+  .dm-metrics-strip,
+  .admin-metrics-strip,
+  .admin-metrics-strip.strip-5 {
     grid-template-columns: 1fr;
   }
   .session-ops-layout {

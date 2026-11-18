@@ -111,9 +111,10 @@ export class GameDetailPage {
         // Right Column: Sticky Noir Dossier Sidebar (Pricing, Promos & CTA)
         h('div', { className: 'dossier-sidebar' },
           h('div', { className: 'dossier-sidebar-card' },
-            h('div', { style: 'text-align: center; margin-bottom: 1.5rem;' },
-              generateGamePosterSvg(game.title, game.is_age_restricted, 280, 200)
-            ),
+            h('div', {
+              style: { textAlign: 'center', marginBottom: '1.5rem' },
+              innerHTML: generateGamePosterSvg(game.title, game.is_age_restricted, 320, 240),
+            }),
             h('h3', { style: 'font-size: 1.3rem; margin-bottom: 0.5rem; text-align: center;' }, 'Bảng Giá & Ký Thác'),
             h('p', { className: 'text-muted text-center', style: 'font-size: 0.85rem; margin-bottom: 1.25rem;' },
               'Giá vé trọn gói đã gồm phòng vật lý, kịch bản độc quyền, trang phục và Quản trò (DM).'

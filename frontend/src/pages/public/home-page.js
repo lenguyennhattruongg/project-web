@@ -159,9 +159,10 @@ export class HomePage {
           h('p', { className: 'text-muted' }, 'Kịch bản trinh thám suy lý đỉnh cao được giới phê bình đánh giá 9.8/10.')
         ),
         h('div', { className: 'spotlight-card' },
-          h('div', { className: 'spotlight-poster-wrapper' },
-            generateGamePosterSvg('Martinez Chết Tại Kinh Kỳ Quán', 'Kinh dị / Suy lý', 41)
-          ),
+          h('div', {
+            className: 'spotlight-poster-wrapper',
+            innerHTML: generateGamePosterSvg('Martinez Chết Tại Kinh Kỳ Quán', false, 400, 560),
+          }),
           h('div', { className: 'spotlight-info' },
             h('span', { className: 'spotlight-tag' }, renderIcon('shield'), ' KIỆT TÁC SUY LÝ CỔ ĐIỂN'),
             h('h3', { className: 'spotlight-title' }, 'Martinez Chết Tại Kinh Kỳ Quán'),

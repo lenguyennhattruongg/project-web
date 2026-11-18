@@ -265,14 +265,48 @@ export const demoApi = {
 
   async adminAssignDm(roomId, dmId) {
     await delay(400);
-    const room = sharedStore.adminAssignDm(roomId, dmId);
+    const user = auth.getUser();
+    const room = sharedStore.adminAssignDm(roomId, dmId, user);
     return { success: true, data: room, message: 'Đã phân công Quản trò.' };
+  },
+
+  async adminRevokeDm(roomId, reason) {
+    await delay(400);
+    const user = auth.getUser();
+    const room = sharedStore.adminRevokeDm(roomId, reason, user);
+    return { success: true, data: room, message: 'Đã thu hồi phân công Quản trò thành công.' };
   },
 
   async adminConfirmVenue(roomId, physicalRoomId) {
     await delay(400);
-    const room = sharedStore.adminConfirmVenueAndSchedule(roomId, physicalRoomId);
+    const user = auth.getUser();
+    const room = sharedStore.adminConfirmVenueAndSchedule(roomId, physicalRoomId, user);
     return { success: true, data: room, message: 'Đã chốt phòng vật lý và mở thời hạn đặt cọc.' };
+  },
+
+  async adminProcessRefund(refundId, isApproved, reason = '') {
+    await delay(400);
+    const user = auth.getUser();
+    const refund = sharedStore.adminProcessRefund(refundId, isApproved, reason, user);
+    return {
+      success: true,
+      data: refund,
+      message: isApproved ? 'Đã duyệt hoàn cọc thành công.' : 'Đã từ chối yêu cầu hoàn cọc.',
+    };
+  },
+
+  async adminUpdateGamePricing(gameId, updates) {
+    await delay(400);
+    const user = auth.getUser();
+    const game = sharedStore.adminUpdateGamePricing(gameId, updates, user);
+    return { success: true, data: game, message: 'Đã cập nhật bảng giá kịch bản.' };
+  },
+
+  async adminUpdateUserRole(userId, newRole) {
+    await delay(350);
+    const user = auth.getUser();
+    const res = sharedStore.adminUpdateUserRole(userId, newRole, user);
+    return { success: true, data: res, message: 'Đã cập nhật phân quyền tài khoản.' };
   },
 
   async adminCancelRoom(roomId, reason) {

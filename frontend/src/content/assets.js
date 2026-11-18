@@ -65,6 +65,10 @@ export function generateGamePosterSvg(title, isAgeRestricted = false, width = 40
       <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
         <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(196,163,107,0.06)" stroke-width="1"/>
       </pattern>
+      <linearGradient id="bottomShadow_${theme.primaryHue}" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#0B0C0F" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#0B0C0F" stop-opacity="0.95"/>
+      </linearGradient>
     </defs>
     <rect width="${width}" height="${height}" fill="url(#bgGrad_${theme.primaryHue})"/>
     <rect width="${width}" height="${height}" fill="url(#grid)"/>
@@ -94,11 +98,11 @@ export function generateGamePosterSvg(title, isAgeRestricted = false, width = 40
     }
 
     <!-- Bottom Typography Block -->
-    <rect x="0" y="${height * 0.75}" width="${width}" height="${height * 0.25}" fill="linear-gradient(to top, rgba(11,12,15,0.95), transparent)"/>
-    <text x="${width / 2}" y="${height * 0.86}" font-family="'Cormorant Garamond', serif" font-size="22" font-weight="bold" fill="#F3F0E9" text-anchor="middle" letter-spacing="1.5">
+    <rect x="0" y="${height * 0.70}" width="${width}" height="${height * 0.30}" fill="url(#bottomShadow_${theme.primaryHue})"/>
+    <text x="${width / 2}" y="${height * 0.86}" font-family="'Cormorant Garamond', serif" font-size="20" font-weight="bold" fill="#F3F0E9" text-anchor="middle" letter-spacing="1.5">
       ${cleanTitle}
     </text>
-    <text x="${width / 2}" y="${height * 0.92}" font-family="'Be Vietnam Pro', sans-serif" font-size="11" fill="#92949B" text-anchor="middle" letter-spacing="2">
+    <text x="${width / 2}" y="${height * 0.93}" font-family="'Be Vietnam Pro', sans-serif" font-size="10" fill="#92949B" text-anchor="middle" letter-spacing="2">
       JUBENSHA • KỊCH BẢN SÁT
     </text>
   </svg>`;

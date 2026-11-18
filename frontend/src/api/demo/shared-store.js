@@ -562,17 +562,28 @@ class SharedStore {
     return { success: true, room };
   }
 
-  adminAssignDm(roomId, dmId) {
+  adminAssignDm(roomId, dmId, adminActor = null) {
     const room = this.data.gameRooms.find((r) => r.id === roomId);
     const dm = this.data.dmStaff.find((d) => d.id === dmId);
     if (!room || !dm) throw new Error('Dữ liệu phân công không hợp lệ.');
 
+    if (room.dm_assignment && ['PENDING', 'ACCEPTED'].includes(room.dm_assignment.status)) {
+      throw new Error(`Phòng ${room.code} đã có Quản trò (${room.dm_assignment.dm_name}) được phân công. Vui lòng thu hồi phân công hiện tại trước khi xếp Quản trò mới.`);
+    }
+
+    const hoursUntilSession = (new Date(room.session_start_time).getTime() - Date.now()) / (3600 * 1000);
+    const bufferViolated = hoursUntilSession < 12;
+
+    room.assignment_history = room.assignment_history || [];
     room.dm_assignment = {
       id: `dma_${Date.now()}`,
       dm_id: dm.id,
       dm_name: dm.name,
       status: DM_ASSIGNMENT_STATUS.PENDING,
       assigned_at: new Date().toISOString(),
+      assigned_by: adminActor?.name || 'Ban Quản Trị',
+      prep_buffer_hours: Math.max(0, Math.round(hoursUntilSession * 10) / 10),
+      prep_buffer_warning: bufferViolated,
     };
 
     this.data.notifications.unshift({
@@ -584,6 +595,74 @@ class SharedStore {
       is_read: false,
       created_at: new Date().toISOString(),
       target_hash: `#/dm/assignments`,
+    });
+
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: adminActor?.name || 'Ban Quản Trị',
+      actor_id: adminActor?.id || 'user_admin_01',
+      actor_role: 'ADMIN',
+      action: 'ASSIGN_DM',
+      target_type: 'DMAssignment',
+      target_id: room.dm_assignment.id,
+      details: `Phân công Quản trò ${dm.name} cho phòng ${room.code} (Kịch bản: ${room.game_details?.title || room.game_id}). Khoảng đệm chuẩn bị: ${Math.round(hoursUntilSession * 10) / 10}h.`,
+      created_at: new Date().toISOString(),
+    });
+
+    this.save(this.data);
+    return room;
+  }
+
+  adminRevokeDm(roomId, reason, adminActor = null) {
+    const room = this.data.gameRooms.find((r) => r.id === roomId);
+    if (!room) throw new Error('Phòng không tồn tại.');
+
+    if (!room.dm_assignment || !['PENDING', 'ACCEPTED'].includes(room.dm_assignment.status)) {
+      throw new Error('Chỉ có thể thu hồi phân công Quản trò đang ở trạng thái PENDING hoặc ACCEPTED.');
+    }
+
+    if (!reason || reason.trim().length < 5) {
+      throw new Error('Bắt buộc phải cung cấp lý do cụ thể (tối thiểu 5 ký tự) khi thu hồi phân công Quản trò.');
+    }
+
+    const trimmedReason = reason.trim();
+    const oldDm = room.dm_assignment;
+
+    room.assignment_history = room.assignment_history || [];
+    const revokedRecord = {
+      ...oldDm,
+      status: DM_ASSIGNMENT_STATUS.CANCELLED,
+      revoked_at: new Date().toISOString(),
+      revoked_by: adminActor?.name || 'Ban Quản Trị',
+      revocation_reason: trimmedReason,
+    };
+    room.assignment_history.push(revokedRecord);
+
+    room.dm_assignment = null;
+    room.status = GAMEROOM_STATUS.WAITING_FOR_DM;
+
+    this.data.notifications.unshift({
+      id: `notif_${Date.now()}`,
+      user_id: oldDm.dm_id,
+      type: 'DM_ASSIGNMENT_REVOKED',
+      title: `Thu hồi phân công phòng ${room.code}`,
+      message: `Ban Quản Trị đã thu hồi phân công dẫn dắt phòng ${room.code}. Lý do: ${trimmedReason}.`,
+      is_read: false,
+      created_at: new Date().toISOString(),
+      target_hash: '#/dm/assignments',
+    });
+
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: adminActor?.name || 'Ban Quản Trị',
+      actor_id: adminActor?.id || 'user_admin_01',
+      actor_role: 'ADMIN',
+      action: 'ADMIN_REVOKE_ASSIGNMENT',
+      target_type: 'DMAssignment',
+      target_id: revokedRecord.id,
+      details: `Thu hồi phân công Quản trò ${oldDm.dm_name} cho phòng ${room.code}. Lý do: ${trimmedReason}. Phòng chuyển về WAITING_FOR_DM.`,
+      reason: trimmedReason,
+      created_at: new Date().toISOString(),
     });
 
     this.save(this.data);
@@ -865,10 +944,45 @@ class SharedStore {
     };
   }
 
-  adminConfirmVenueAndSchedule(roomId, physicalRoomId) {
+  adminConfirmVenueAndSchedule(roomId, physicalRoomId, adminActor = null) {
     const room = this.data.gameRooms.find((r) => r.id === roomId);
     const phyRoom = this.data.physicalRooms.find((p) => p.id === physicalRoomId);
     if (!room || !phyRoom) throw new Error('Dữ liệu phòng vật lý không hợp lệ.');
+
+    if (phyRoom.status !== 'AVAILABLE') {
+      throw new Error(`Phòng mật thất "${phyRoom.name}" đang trong tình trạng bảo trì, không thể xếp lịch.`);
+    }
+
+    // Capacity validation: active players + 1 DM
+    const activeParticipants = room.participants.filter(
+      (p) => !['LEFT', 'CANCELLED_UNPAID', 'CANCELLED_BY_ADMIN'].includes(p.status)
+    );
+    const totalOccupants = activeParticipants.length + 1; // Includes 1 DM
+    if (phyRoom.capacity < totalOccupants) {
+      throw new Error(`Sức chứa của phòng mật thất (${phyRoom.capacity} người) không đủ cho ${activeParticipants.length} thám tử và 1 Quản trò DM (tổng ${totalOccupants} người).`);
+    }
+
+    // Session duration + 30-min cleanup buffer conflict check
+    const game = this.data.games.find((g) => g.id === room.game_id);
+    const durationMinutes = game?.duration_minutes || 240;
+    const targetStart = new Date(room.session_start_time).getTime();
+    const targetEnd = targetStart + (durationMinutes + 30) * 60 * 1000; // Includes 30m cleanup buffer
+
+    for (const other of this.data.gameRooms) {
+      if (other.id === room.id) continue;
+      if (!other.physical_room || other.physical_room.id !== physicalRoomId) continue;
+      // Exclude cancelled, expired, or completed rooms from occupying conflicts
+      if (['CANCELLED', 'EXPIRED', 'COMPLETED'].includes(other.status)) continue;
+
+      const otherGame = this.data.games.find((g) => g.id === other.game_id);
+      const otherDuration = otherGame?.duration_minutes || 240;
+      const otherStart = new Date(other.session_start_time).getTime();
+      const otherEnd = otherStart + (otherDuration + 30) * 60 * 1000;
+
+      if (Math.max(targetStart, otherStart) < Math.min(targetEnd, otherEnd)) {
+        throw new Error(`Xung đột lịch mật thất: Phòng "${phyRoom.name}" đã được xếp cho vụ án ${other.code} trong khoảng thời gian này (bao gồm 30 phút dọn dẹp buffer giữa các ca).`);
+      }
+    }
 
     room.physical_room = { id: phyRoom.id, name: phyRoom.name };
     room.status = GAMEROOM_STATUS.WAITING_FOR_DEPOSIT;
@@ -881,8 +995,139 @@ class SharedStore {
       }
     });
 
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: adminActor?.name || 'Ban Quản Trị',
+      actor_id: adminActor?.id || 'user_admin_01',
+      actor_role: 'ADMIN',
+      action: 'CONFIRM_VENUE_AND_SCHEDULE',
+      target_type: 'GameRoom',
+      target_id: room.id,
+      details: `Chốt mật thất "${phyRoom.name}" cho vụ án ${room.code} và mở cọc 2 giờ cho từng thành viên.`,
+      created_at: new Date().toISOString(),
+    });
+
     this.save(this.data);
     return room;
+  }
+
+  adminProcessRefund(refundId, isApproved, reason = '', adminActor = null) {
+    const refund = this.data.refunds.find((r) => r.id === refundId);
+    if (!refund) throw new Error('Yêu cầu hoàn tiền không tồn tại.');
+
+    if (refund.status === 'SUCCEEDED') {
+      throw new Error('Yêu cầu hoàn tiền này đã được hoàn tất thành công trước đó (chống hoàn trùng).');
+    }
+
+    if (!['REQUESTED', 'FAILED'].includes(refund.status)) {
+      throw new Error(`Không thể xử lý yêu cầu hoàn tiền ở trạng thái ${refund.status}.`);
+    }
+
+    const room = this.data.gameRooms.find((r) => r.id === refund.room_id || r.code === refund.room_code);
+
+    if (isApproved) {
+      if (room) {
+        const hoursBeforeSession = (new Date(room.session_start_time).getTime() - new Date(refund.created_at).getTime()) / (3600 * 1000);
+        const isEligible = hoursBeforeSession >= 24; // Exactly 24h qualifies
+        if (!isEligible && !reason.includes('ADMIN_POLICY_OVERRIDE')) {
+          throw new Error(`Theo quy định V16: Yêu cầu hủy dưới 24 giờ (${Math.round(hoursBeforeSession * 10) / 10}h trước ca) không đủ điều kiện xét hoàn cọc.`);
+        }
+      }
+
+      const refCode = refund.reference_code || `BANK-REF-${Date.now().toString().slice(-6)}-${Math.floor(1000 + Math.random() * 9000)}`;
+      refund.status = 'SUCCEEDED';
+      refund.reference_code = refCode;
+      refund.processed_at = new Date().toISOString();
+      refund.processed_by = adminActor?.name || 'Ban Quản Trị';
+
+      this.data.auditLogs.unshift({
+        id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        actor_name: adminActor?.name || 'Ban Quản Trị',
+        actor_id: adminActor?.id || 'user_admin_01',
+        actor_role: 'ADMIN',
+        action: 'APPROVE_REFUND',
+        target_type: 'Refund',
+        target_id: refund.id,
+        details: `Duyệt hoàn ${refund.amount_vnd?.toLocaleString('vi-VN')} đ cho người chơi ${refund.user_name || refund.user_id}. Mã GD: ${refCode}.`,
+        created_at: new Date().toISOString(),
+      });
+    } else {
+      if (!reason || reason.trim().length < 5) {
+        throw new Error('Bắt buộc phải cung cấp lý do cụ thể (tối thiểu 5 ký tự) khi từ chối hoàn cọc.');
+      }
+      const trimmedReason = reason.trim();
+      refund.status = 'REJECTED';
+      refund.rejected_reason = trimmedReason;
+      refund.processed_at = new Date().toISOString();
+      refund.processed_by = adminActor?.name || 'Ban Quản Trị';
+
+      this.data.auditLogs.unshift({
+        id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        actor_name: adminActor?.name || 'Ban Quản Trị',
+        actor_id: adminActor?.id || 'user_admin_01',
+        actor_role: 'ADMIN',
+        action: 'REJECT_REFUND',
+        target_type: 'Refund',
+        target_id: refund.id,
+        details: `Từ chối hoàn cọc ${refund.id}. Lý do: ${trimmedReason}.`,
+        reason: trimmedReason,
+        created_at: new Date().toISOString(),
+      });
+    }
+
+    this.save(this.data);
+    return refund;
+  }
+
+  adminUpdateGamePricing(gameId, updates, adminActor = null) {
+    const game = this.data.games.find((g) => g.id === gameId);
+    if (!game) throw new Error('Kịch bản không tồn tại.');
+
+    const oldPrices = {
+      price_day_vnd: game.price_day_vnd,
+      price_night_vnd: game.price_night_vnd,
+    };
+
+    if (updates.price_day_vnd !== undefined) game.price_day_vnd = Number(updates.price_day_vnd);
+    if (updates.price_night_vnd !== undefined) game.price_night_vnd = Number(updates.price_night_vnd);
+    if (updates.duration_minutes !== undefined) game.duration_minutes = Number(updates.duration_minutes);
+    if (updates.verified !== undefined) game.verified = Boolean(updates.verified);
+
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: adminActor?.name || 'Ban Quản Trị',
+      actor_id: adminActor?.id || 'user_admin_01',
+      actor_role: 'ADMIN',
+      action: 'UPDATE_GAME_PRICING',
+      target_type: 'Game',
+      target_id: game.id,
+      details: `Cập nhật cấu hình bảng giá kịch bản "${game.title}". Giá ngày: ${oldPrices.price_day_vnd} -> ${game.price_day_vnd}, Giá đêm: ${oldPrices.price_night_vnd} -> ${game.price_night_vnd}.`,
+      created_at: new Date().toISOString(),
+    });
+
+    this.save(this.data);
+    return game;
+  }
+
+  adminUpdateUserRole(userId, newRole, adminActor = null) {
+    if (!adminActor || adminActor.role !== 'ADMIN') {
+      throw new Error('Chỉ Quản trị viên (ADMIN) mới có quyền thay đổi vai trò tài khoản.');
+    }
+
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: adminActor.name,
+      actor_id: adminActor.id,
+      actor_role: 'ADMIN',
+      action: 'UPDATE_USER_ROLE',
+      target_type: 'User',
+      target_id: userId,
+      details: `Admin ${adminActor.name} cập nhật phân quyền tài khoản ${userId} sang vai trò ${newRole}.`,
+      created_at: new Date().toISOString(),
+    });
+
+    this.save(this.data);
+    return { success: true, userId, newRole };
   }
 
   adminCancelRoom(roomId, reason) {
