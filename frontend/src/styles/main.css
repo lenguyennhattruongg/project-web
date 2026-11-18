@@ -1417,8 +1417,102 @@ a:hover {
 }
 
 /* ==========================================================================
-   Room Detail Showcase & Round Table Ring
+   Room Detail Showcase, Stepper & Round Table Ring
    ========================================================================== */
+.room-stepper-container {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+}
+
+.stepper-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  z-index: 2;
+  flex: 0 0 auto;
+}
+
+.step-indicator {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface-2);
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.step-current .step-indicator {
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
+  background: rgba(196, 163, 107, 0.12);
+  box-shadow: 0 0 16px rgba(196, 163, 107, 0.3);
+}
+
+.step-completed .step-indicator {
+  border-color: #2e7d32;
+  background: rgba(46, 125, 50, 0.15);
+  color: #81c784;
+}
+
+.step-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.step-current .step-label {
+  color: var(--color-accent-gold);
+  font-weight: 600;
+}
+
+.step-completed .step-label {
+  color: var(--color-text-primary);
+}
+
+.step-connector {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-hairline);
+  margin: 0 0.5rem 1.4rem 0.5rem;
+}
+
+.step-connector.connector-active {
+  background: var(--color-accent-gold);
+  box-shadow: 0 0 8px rgba(196, 163, 107, 0.4);
+}
+
+.stepper-branch-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-xs);
+  border-left: 3px solid var(--color-accent-blood);
+  background: rgba(88, 17, 26, 0.1);
+}
+
 .room-hero-card {
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -1614,6 +1708,11 @@ a:hover {
 
 .ui-data-table tr:hover {
   background: rgba(196, 163, 107, 0.03);
+}
+
+/* Mobile Bottom Navigation (Hidden on Desktop, Visible on Mobile <= 768px) */
+.mobile-bottom-nav {
+  display: none;
 }
 
 /* ==========================================================================
