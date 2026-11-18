@@ -1,6 +1,6 @@
 /**
  * Game Catalog Page (#/games)
- * Displays 42 Jubensha games with unverified status tags, 18+ stamps, and 2-tier pricing badges.
+ * Editorial Noir Gallery: 42 Jubensha Dossiers with interactive filter pills, age restrictions, and 2-tier pricing ledgers.
  */
 import { h, renderIcon } from '../../utils/dom.js';
 import { apiService } from '../../api/api-service.js';
@@ -22,83 +22,98 @@ export class GamesPage {
     this.mountPoint.innerHTML = '';
     const container = h('div', { className: 'page-games container' });
 
-    // Page Header
-    const header = h('div', { className: 'page-header' },
-      h('h1', { className: 'page-title' }, 'Danh Mục Kịch Bản Sát (Jubensha)'),
-      h('p', { className: 'page-subtitle text-muted' },
-        'Khám phá 42 kịch bản đa dạng thể loại. Bảng giá cấu hình động theo 2 khung giờ trong ngày.'
+    // 1. Editorial Noir Header
+    const header = h('div', { className: 'catalog-header-noir' },
+      h('span', { className: 'hero-eyebrow' }, renderIcon('sparkles'), ' THƯ VIỆN KỊCH BẢN THƯỢNG HẠNG'),
+      h('h1', { className: 'catalog-header-title' }, 'Kho Tàng 42 Hồ Sơ Án Mạng'),
+      h('p', { className: 'catalog-header-lead' },
+        'Tuyển tập 42 kịch bản Jubensha tuyển chọn với đầy đủ bối cảnh, mức độ khó và phân khúc độ tuổi. Bảng giá cấu hình động theo 2 khung giờ trong ngày.'
       )
     );
     container.appendChild(header);
 
-    // Filter Bar
-    const filterBar = h('div', { className: 'catalog-filter-bar' },
-      h('div', { className: 'search-input-group' },
-        renderIcon('search', 'search-icon'),
-        h('input', {
-          type: 'text',
-          className: 'form-control',
-          placeholder: 'Tìm kiếm tên kịch bản...',
-          value: this.search,
-          oninput: (e) => {
-            this.search = e.target.value;
-            this.applyFiltersAndRenderGrid();
-          },
-        })
-      ),
-      h('div', { className: 'filter-controls' },
-        h('select', {
-          className: 'form-control select-genre',
-          onchange: (e) => {
-            this.selectedGenre = e.target.value;
-            this.applyFiltersAndRenderGrid();
-          },
-        },
-          h('option', { value: '' }, 'Tất cả thể loại'),
-          h('option', { value: 'Kinh dị' }, 'Kinh dị'),
-          h('option', { value: 'Trinh thám' }, 'Trinh thám'),
-          h('option', { value: 'Hardcore' }, 'Hardcore'),
-          h('option', { value: 'Cổ trang' }, 'Cổ trang'),
-          h('option', { value: 'Hài hước hoan lạc' }, 'Hài hước')
-        ),
-        h('select', {
-          className: 'form-control select-players',
-          onchange: (e) => {
-            this.selectedPlayers = e.target.value;
-            this.applyFiltersAndRenderGrid();
-          },
-        },
-          h('option', { value: '' }, 'Số người chơi'),
-          h('option', { value: '5' }, '5 người'),
-          h('option', { value: '6' }, '6 người'),
-          h('option', { value: '7' }, '7 người'),
-          h('option', { value: '8' }, '8 người')
-        ),
-        h('label', { className: 'filter-checkbox-label' },
+    // 2. Interactive Noir Filter Toolbar
+    const filterBar = h('div', { className: 'catalog-filter-noir' },
+      // Search Row
+      h('div', { className: 'catalog-search-row' },
+        h('div', { className: 'search-input-group', style: 'width: 100%;' },
+          renderIcon('search', 'search-icon'),
           h('input', {
-            type: 'checkbox',
-            checked: this.is18Only,
-            onchange: (e) => {
-              this.is18Only = e.target.checked;
+            type: 'text',
+            className: 'noir-search-input',
+            placeholder: 'Tìm kiếm tên hồ sơ án mạng hoặc từ khóa thể loại...',
+            value: this.search,
+            oninput: (e) => {
+              this.search = e.target.value;
               this.applyFiltersAndRenderGrid();
             },
-          }),
-          h('span', {}, 'Chỉ game 18+')
+          })
         )
+      ),
+      // Filter Pills Row
+      h('div', { className: 'filter-pills-row' },
+        h('span', { className: 'filter-pill-label' }, 'Thể loại:'),
+        ...['', 'Trinh thám', 'Kinh dị', 'Hardcore', 'Cổ trang', 'Hài hước'].map((genre) =>
+          h('button', {
+            className: `filter-pill-btn ${this.selectedGenre === genre ? 'active' : ''}`,
+            onclick: () => {
+              this.selectedGenre = genre;
+              this.updateFilterPills();
+              this.applyFiltersAndRenderGrid();
+            },
+          }, genre ? genre : 'Tất cả')
+        ),
+        h('span', { className: 'filter-pill-label', style: 'margin-left: 1rem;' }, 'Số người:'),
+        ...['', '5', '6', '7', '8'].map((p) =>
+          h('button', {
+            className: `filter-pill-btn ${this.selectedPlayers === p ? 'active' : ''}`,
+            onclick: () => {
+              this.selectedPlayers = p;
+              this.updateFilterPills();
+              this.applyFiltersAndRenderGrid();
+            },
+          }, p ? `${p} người` : 'Tất cả')
+        ),
+        h('button', {
+          className: `filter-pill-btn ${this.is18Only ? 'active' : ''}`,
+          style: this.is18Only ? 'background: #58111A; border-color: #D83B40; color: #FFF;' : 'margin-left: 1rem;',
+          onclick: () => {
+            this.is18Only = !this.is18Only;
+            this.updateFilterPills();
+            this.applyFiltersAndRenderGrid();
+          },
+        }, renderIcon('shield'), ' Chỉ xem 18+')
       )
     );
+    this.filterBarElement = filterBar;
     container.appendChild(filterBar);
 
-    // Games Grid Container
-    this.gridContainer = h('div', { className: 'games-grid' },
-      h('div', { className: 'loading-pulse' }, 'Đang tải danh mục kịch bản...')
+    // 3. Counter & Result Stats
+    this.statsBar = h('div', { className: 'flex-between text-muted', style: 'margin-bottom: 1.5rem; font-size: 0.88rem;' });
+    container.appendChild(this.statsBar);
+
+    // 4. Asymmetric Magazine Grid
+    this.gridContainer = h('div', { className: 'catalog-editorial-grid' },
+      h('div', { className: 'loading-pulse' }, 'Đang giải mã thư viện hồ sơ án mạng...')
     );
     container.appendChild(this.gridContainer);
 
     this.mountPoint.appendChild(container);
 
-    // Initial Load
+    // Load initial games
     await this.loadGames();
+  }
+
+  updateFilterPills() {
+    if (!this.filterBarElement) return;
+    const btns = this.filterBarElement.querySelectorAll('.filter-pill-btn');
+    btns.forEach((btn) => {
+      const text = btn.textContent.trim();
+      if (text.includes('18+')) {
+        btn.className = `filter-pill-btn ${this.is18Only ? 'active' : ''}`;
+        btn.style = this.is18Only ? 'background: #58111A; border-color: #D83B40; color: #FFF; margin-left: 1rem;' : 'margin-left: 1rem;';
+      }
+    });
   }
 
   async loadGames() {
@@ -107,7 +122,7 @@ export class GamesPage {
       this.games = res.data;
       this.applyFiltersAndRenderGrid();
     } catch (err) {
-      this.gridContainer.innerHTML = `<div class="error-state"><p class="text-danger">Lỗi tải dữ liệu: ${err.message}</p></div>`;
+      this.gridContainer.innerHTML = `<div class="error-state"><p class="text-danger">Lỗi tải dữ liệu kịch bản: ${err.message}</p></div>`;
     }
   }
 
@@ -119,10 +134,10 @@ export class GamesPage {
 
     if (this.search.trim()) {
       const q = this.search.toLowerCase().trim();
-      list = list.filter((g) => g.title.toLowerCase().includes(q) || g.genre.toLowerCase().includes(q));
+      list = list.filter((g) => g.title.toLowerCase().includes(q) || (g.genre && g.genre.toLowerCase().includes(q)));
     }
     if (this.selectedGenre) {
-      list = list.filter((g) => g.genre.includes(this.selectedGenre));
+      list = list.filter((g) => g.genre && g.genre.includes(this.selectedGenre));
     }
     if (this.is18Only) {
       list = list.filter((g) => g.is_age_restricted);
@@ -132,50 +147,53 @@ export class GamesPage {
       list = list.filter((g) => g.min_players <= p && g.max_players >= p);
     }
 
+    if (this.statsBar) {
+      this.statsBar.innerHTML = `
+        <span>Hiển thị <strong>${list.length}</strong> / ${this.games.length} hồ sơ án mạng</span>
+        <span class="font-mono text-gold">${this.is18Only ? '• Đang lọc án 18+' : ''}</span>
+      `;
+    }
+
     if (list.length === 0) {
       this.gridContainer.appendChild(
-        h('div', { className: 'empty-state text-center' },
-          h('p', { className: 'text-muted' }, 'Không tìm thấy kịch bản nào khớp với bộ lọc.')
+        h('div', { className: 'empty-state text-center', style: 'grid-column: 1 / -1; padding: 4rem 1rem;' },
+          h('p', { className: 'text-muted', style: 'font-size: 1.1rem;' }, 'Không tìm thấy hồ sơ nào khớp với bộ lọc điều tra.')
         )
       );
       return;
     }
 
     list.forEach((game) => {
-      const card = h('div', { className: 'game-card' },
-        // Poster with SVG motif
-        h('div', { className: 'game-poster-box', innerHTML: generateGamePosterSvg(game.title, game.is_age_restricted, 320, 420) }),
-        // Content
-        h('div', { className: 'game-card-body' },
+      const item = h('div', { className: 'game-folio-item' },
+        // Poster Cover
+        h('div', { className: 'game-folio-poster', innerHTML: generateGamePosterSvg(game.title, game.is_age_restricted, 320, 220) }),
+        // Body Details
+        h('div', { className: 'game-folio-body' },
           h('div', { className: 'game-tags-row' },
-            h('span', { className: 'game-genre-tag' }, game.genre),
+            h('span', { className: 'game-genre-tag' }, game.genre || 'Trinh thám'),
             game.is_age_restricted ? h('span', { className: 'game-18-badge' }, '18+') : null,
-            !game.verified ? h('span', { className: 'badge-unverified', title: 'Tên và thông số đang chờ đối chiếu menu gốc của quán' }, 'Thông số minh họa') : null
+            !game.verified ? h('span', { className: 'badge-unverified' }, 'Chờ thẩm định') : null
           ),
-          h('h3', { className: 'game-card-title' },
+          h('h3', { className: 'game-folio-title' },
             h('a', { href: `#/games/${game.id}` }, game.title)
           ),
-          h('div', { className: 'game-specs-row text-muted' },
-            h('span', {}, renderIcon('users'), ` ${game.min_players}–${game.max_players} người`),
-            h('span', {}, renderIcon('clock'), ` ${game.duration_minutes} phút`)
+          h('div', { className: 'game-folio-meta' },
+            h('span', {}, renderIcon('users'), ` ${game.min_players}–${game.max_players} thám tử`),
+            h('span', {}, renderIcon('clock'), ` ${game.duration_minutes || 240}p`)
           ),
-          // 2-Tier Pricing
-          h('div', { className: 'game-pricing-tiers' },
-            h('div', { className: 'tier-row' },
-              h('span', { className: 'text-muted' }, 'Ngày (09:00–19:59):'),
-              h('strong', {}, formatCurrency(game.price_day_vnd))
-            ),
-            h('div', { className: 'tier-row' },
-              h('span', { className: 'text-muted' }, 'Tối (từ 20:00):'),
-              h('strong', { className: 'highlight-gold' }, formatCurrency(game.price_night_vnd))
+          // 2-Tier Pricing Snapshot
+          h('div', { className: 'game-folio-price' },
+            h('span', {}, 'Ngày: ', h('strong', {}, formatCurrency(game.price_day_vnd))),
+            h('span', {}, 'Tối: ', h('strong', { className: 'highlight-gold' }, formatCurrency(game.price_night_vnd)))
+          ),
+          h('div', { style: 'margin-top: auto;' },
+            h('a', { className: 'btn btn-secondary btn-block', href: `#/games/${game.id}` },
+              'Xem Hồ Sơ & Mở Phòng'
             )
-          ),
-          h('div', { className: 'game-card-actions' },
-            h('a', { className: 'btn btn-secondary btn-block', href: `#/games/${game.id}` }, 'Xem chi tiết & Mở phòng')
           )
         )
       );
-      this.gridContainer.appendChild(card);
+      this.gridContainer.appendChild(item);
     });
   }
 }

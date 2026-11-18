@@ -1,6 +1,6 @@
 /**
  * Game Detail Page (#/games/:id)
- * Features visual hero, verified specs, 2-tier pricing, active promotions, and CTA to Create Room.
+ * Film Noir Case Dossier: Asymmetric Layout, Atmospheric Synopsis, 18+ Warning, 2-Tier Pricing Ledger, and Create Room CTA.
  */
 import { h, renderIcon } from '../../utils/dom.js';
 import { apiService } from '../../api/api-service.js';
@@ -23,108 +23,147 @@ export class GameDetailPage {
       const res = await apiService.getGameById(this.gameId);
       const game = res.data;
 
-      // 1. Back link
+      // 1. Breadcrumb Navigation
       container.appendChild(
-        h('div', { className: 'page-nav-back' },
-          h('a', { className: 'btn-back', href: '#/games' }, renderIcon('chevronLeft'), ' Quay lại danh mục')
+        h('div', { style: 'padding: 2rem 0 1rem 0;' },
+          h('a', { className: 'link-gold flex-align-center', href: '#/games', style: 'gap: 0.4rem; font-size: 0.9rem;' },
+            renderIcon('chevronLeft'), ' Quay lại Danh mục 42 Hồ Sơ'
+          )
         )
       );
 
-      // 2. Main Hero Grid
-      const heroGrid = h('div', { className: 'game-detail-hero-grid' },
-        // Left: Poster Artwork
-        h('div', { className: 'game-detail-poster-col' },
-          h('div', { className: 'game-poster-wrapper', innerHTML: generateGamePosterSvg(game.title, game.is_age_restricted, 380, 520) })
-        ),
-        // Right: Information Column
-        h('div', { className: 'game-detail-info-col' },
-          h('div', { className: 'game-detail-meta-tags' },
-            h('span', { className: 'game-genre-tag' }, game.genre),
-            game.is_age_restricted ? h('span', { className: 'game-18-badge' }, '18+ Giới hạn tuổi') : null,
+      // 2. 18+ Explicit Warning (if applicable, e.g. #16, #17, #18)
+      if (game.is_age_restricted) {
+        container.appendChild(
+          h('div', { className: 'age-warning-banner' },
+            renderIcon('shield'),
+            h('span', {},
+              h('strong', {}, 'CẢNH BÁO GIỚI HẠN ĐỘ TUỔI 18+:'),
+              ' Hồ sơ vụ án này chứa các tình tiết kinh dị tâm lý nặng, yếu tố giật gân hoặc máu me. Người chơi bắt buộc xuất trình CCCD xác nhận đủ 18 tuổi trước khi nhận kịch bản tại quán.'
+            )
+          )
+        );
+      }
+
+      // 3. Main Dossier Layout (Asymmetric 1.4fr : 1fr)
+      const dossierGrid = h('div', { className: 'dossier-grid' },
+        // Left Column: Story, Atmosphere, Specs, and Related Rooms
+        h('div', { className: 'dossier-main' },
+          h('div', { className: 'game-tags-row', style: 'margin-bottom: 0.75rem;' },
+            h('span', { className: 'game-genre-tag' }, game.genre || 'Trinh thám'),
+            game.is_age_restricted ? h('span', { className: 'game-18-badge' }, '18+ Phân loại gắt gao') : null,
             !game.verified ? h('span', { className: 'badge-unverified' }, 'Thông số minh họa (Chờ đối chiếu menu)') : null
           ),
-          h('h1', { className: 'game-detail-title' }, game.title),
-          h('p', { className: 'game-detail-desc text-muted' }, game.description),
+          h('h1', { className: 'dossier-title' }, game.title),
+          h('p', { className: 'text-muted font-mono', style: 'font-size: 0.85rem; margin-bottom: 2rem;' },
+            `MÃ HỒ SƠ: JBS-V16-${String(game.id).padStart(3, '0')} • THỂ LOẠI: ${(game.genre || 'Trinh thám').toUpperCase()}`
+          ),
 
-          // Specs Grid
-          h('div', { className: 'game-detail-specs-box' },
-            h('div', { className: 'spec-item' },
-              h('span', { className: 'spec-label text-muted' }, 'Số người chơi:'),
-              h('strong', {}, `${game.min_players} – ${game.max_players} người`)
-            ),
-            h('div', { className: 'spec-item' },
-              h('span', { className: 'spec-label text-muted' }, 'Thời lượng:'),
-              h('strong', {}, `${game.duration_minutes} phút (~${(game.duration_minutes / 60).toFixed(1)} tiếng)`)
-            ),
-            h('div', { className: 'spec-item' },
-              h('span', { className: 'spec-label text-muted' }, 'Độ khó phá án:'),
-              h('strong', { className: 'text-gold' }, '★'.repeat(game.difficulty || 4))
+          // Story Synopsis Section
+          h('div', { className: 'dossier-section' },
+            h('h3', { className: 'dossier-section-title' }, 'Bối Cảnh Hiện Trường & Giới Thiệu Vụ Án'),
+            h('p', { className: 'dossier-synopsis' },
+              game.description ||
+              'Một biến cố đẫm máu bất ngờ xảy ra tại địa điểm biệt lập. Những manh mối để lại đều bị xáo trộn bởi thủ phạm giấu mặt. Mỗi nhân vật tham gia đều mang trong mình những góc khuất tăm tối, động cơ bất minh và lời khai mâu thuẫn. Nhiệm vụ của bàn chơi là kết nối các chứng cứ vật lý, đối chất trực diện và lột trần chân tướng sự thật trước khi thời gian khép lại.'
             )
           ),
 
-          // 2-Tier Pricing Table
-          h('div', { className: 'pricing-tiers-card' },
-            h('h4', { className: 'pricing-card-title' }, 'Bảng Giá Vé Theo Khung Giờ (Đã gồm DM & Phòng)'),
-            h('div', { className: 'pricing-tiers-grid' },
-              h('div', { className: 'tier-box' },
-                h('span', { className: 'tier-name' }, 'Khung giờ ngày (09:00–19:59)'),
-                h('span', { className: 'tier-price' }, formatCurrency(game.price_day_vnd)),
-                h('span', { className: 'tier-note text-muted' }, 'Áp dụng mọi ngày')
+          // Core Specifications Grid
+          h('div', { className: 'dossier-section' },
+            h('h3', { className: 'dossier-section-title' }, 'Quy Cách Tổ Chức & Điều Kiện Tham Gia'),
+            h('div', { className: 'spotlight-specs', style: 'border: 1px solid var(--color-noir-divider); padding: 1.5rem; background: var(--color-bg-surface-1);' },
+              h('div', { className: 'spec-item' },
+                h('span', { className: 'spec-label' }, 'Số lượng thám tử'),
+                h('span', { className: 'spec-val text-gold' }, `${game.min_players} – ${game.max_players} người`)
               ),
-              h('div', { className: 'tier-box tier-night' },
-                h('span', { className: 'tier-name' }, 'Khung giờ tối (từ 20:00)'),
-                h('span', { className: 'tier-price highlight-gold' }, formatCurrency(game.price_night_vnd)),
-                h('span', { className: 'tier-note text-muted' }, 'Phụ thu ca đêm không gian nhập vai')
+              h('div', { className: 'spec-item' },
+                h('span', { className: 'spec-label' }, 'Thời lượng phiên'),
+                h('span', { className: 'spec-val' }, `${game.duration_minutes || 240} phút (~${((game.duration_minutes || 240) / 60).toFixed(1)} tiếng)`)
+              ),
+              h('div', { className: 'spec-item' },
+                h('span', { className: 'spec-label' }, 'Độ khó suy luận'),
+                h('span', { className: 'spec-val text-amber' }, '★'.repeat(game.difficulty || 4) + '☆'.repeat(5 - (game.difficulty || 4)))
+              ),
+              h('div', { className: 'spec-item' },
+                h('span', { className: 'spec-label' }, 'Quản trò (DM)'),
+                h('span', { className: 'spec-val' }, 'Phân công riêng')
               )
             )
           ),
 
-          // Active Promotions Box
-          h('div', { className: 'promotions-info-box' },
-            h('h4', { className: 'promos-title' }, renderIcon('sparkles'), ' Ưu Đãi Có Thể Áp Dụng (Không cộng dồn)'),
-            h('ul', { className: 'promos-list text-muted' },
-              h('li', {}, h('strong', {}, 'Thứ 3 Vui Vẻ:'), ' Giảm 30% giá vé khi đặt trước ít nhất 1 ngày, ca chơi bắt đầu trong 09:00–19:00.'),
-              h('li', {}, h('strong', {}, 'Học Sinh - Sinh Viên:'), ' Giảm 20.000đ/người từ Thứ 2 đến Thứ 5 trong 09:00–19:00 (Yêu cầu tài khoản có trạng thái xác minh HSSV).')
+          // Salon Immersion Experience Standards
+          h('div', { className: 'dossier-section' },
+            h('h3', { className: 'dossier-section-title' }, 'Tiêu Chuẩn Không Gian Mật Thất Tại Quán'),
+            h('ul', { style: 'color: var(--color-text-secondary); line-height: 1.8; padding-left: 1.25rem;' },
+              h('li', {}, h('strong', {}, 'Phòng chơi vật lý biệt lập:'), ' Cách âm hoàn toàn, trang bị hệ thống âm thanh, ánh sáng theo mood kịch bản.'),
+              h('li', {}, h('strong', {}, 'Trang phục & Đạo cụ:'), ' Cung cấp y phục nhân vật độc quyền cùng bộ hồ sơ chứng cứ hiện trường in màu sắc nét.'),
+              h('li', {}, h('strong', {}, 'Quản trò (DM) chuyên trách:'), ' Được phân công trước tối thiểu 12 giờ để nghiên cứu kịch bản và dẫn dắt mạch lạc.')
             )
           ),
 
-          // CTA Actions
-          h('div', { className: 'game-detail-cta-row' },
-            h('a', { className: 'btn btn-primary btn-lg', href: `#/player/create-room?game_id=${game.id}` },
-              renderIcon('plus'), ' Mở Phòng Kịch Bản Này Ngay'
+          // Related Active Public Rooms for this Game
+          h('div', { className: 'dossier-section', id: 'related-rooms-container' },
+            h('h3', { className: 'dossier-section-title' }, 'Phòng Đang Chiêu Mộ Cho Kịch Bản Này'),
+            h('div', { className: 'loading-pulse' }, 'Đang tìm kiếm phòng đang mở...')
+          )
+        ),
+
+        // Right Column: Sticky Noir Dossier Sidebar (Pricing, Promos & CTA)
+        h('div', { className: 'dossier-sidebar' },
+          h('div', { className: 'dossier-sidebar-card' },
+            h('div', { style: 'text-align: center; margin-bottom: 1.5rem;' },
+              generateGamePosterSvg(game.title, game.is_age_restricted, 280, 200)
+            ),
+            h('h3', { style: 'font-size: 1.3rem; margin-bottom: 0.5rem; text-align: center;' }, 'Bảng Giá & Ký Thác'),
+            h('p', { className: 'text-muted text-center', style: 'font-size: 0.85rem; margin-bottom: 1.25rem;' },
+              'Giá vé trọn gói đã gồm phòng vật lý, kịch bản độc quyền, trang phục và Quản trò (DM).'
+            ),
+
+            // 2-Tier Pricing Table
+            h('table', { className: 'price-ledger-table' },
+              h('tbody', {},
+                h('tr', {},
+                  h('td', {}, 'Khung ngày (09:00–19:59):'),
+                  h('td', {}, formatCurrency(game.price_day_vnd))
+                ),
+                h('tr', {},
+                  h('td', {}, 'Khung tối (từ 20:00):'),
+                  h('td', { className: 'highlight-gold' }, formatCurrency(game.price_night_vnd))
+                ),
+                h('tr', {},
+                  h('td', {}, 'Tiền cọc giữ chỗ (Cố định):'),
+                  h('td', { className: 'text-emerald' }, '50.000 VNĐ / người')
+                )
+              )
+            ),
+
+            // Promotion Box
+            h('div', { className: 'promo-rules-box' },
+              h('strong', { className: 'text-gold' }, 'ƯU ĐÃI ÁP DỤNG (KHÔNG CỘNG DỒN):'),
+              h('br'),
+              '• ', h('strong', {}, 'Thứ 3 Vui Vẻ:'), ' Giảm 30% khi đặt trước ít nhất 1 ngày (09:00–19:00).',
+              h('br'),
+              '• ', h('strong', {}, 'Học Sinh - Sinh Viên:'), ' Giảm 20.000đ/người từ Thứ 2 đến Thứ 5 (09:00–19:00).'
+            ),
+
+            // CTA Button
+            h('div', { style: 'margin-top: 1.5rem;' },
+              h('a', { className: 'btn btn-primary btn-block btn-lg', href: `#/player/create-room?game_id=${game.id}` },
+                renderIcon('plus'), ' Mở Phòng Kịch Bản Này Ngay'
+              )
+            ),
+            h('p', { className: 'text-muted text-center', style: 'font-size: 0.75rem; margin-top: 0.75rem;' },
+              'Hạn thành lập phòng 4 giờ. Cọc 50.000đ sau khi DM nhận ca & chốt phòng.'
             )
           )
         )
       );
-      container.appendChild(heroGrid);
 
-      // 3. Related Public Rooms for this Game
-      const roomsRes = await apiService.getPublicRooms({ gameId: game.id });
-      const relatedRooms = roomsRes.data;
-
-      const relatedSection = h('div', { className: 'related-rooms-section' },
-        h('h3', { className: 'related-title' }, `Các Phòng Đang Chờ Thành Viên Cho Kịch Bản Này (${relatedRooms.length})`),
-        relatedRooms.length === 0
-          ? h('p', { className: 'text-muted' }, 'Hiện chưa có phòng nào mở cho kịch bản này. Hãy là người đầu tiên tạo phòng!')
-          : h('div', { className: 'related-rooms-grid' },
-              ...relatedRooms.map((r) =>
-                h('div', { className: 'room-mini-card' },
-                  h('div', { className: 'mini-header' },
-                    h('strong', {}, r.code),
-                    renderStatusBadge(r.status)
-                  ),
-                  h('p', { className: 'mini-time text-muted' }, formatDateTime(r.session_start_time)),
-                  h('div', { className: 'mini-footer' },
-                    h('span', { className: 'text-muted' }, `${r.participants.length}/${game.max_players} người`),
-                    h('a', { className: 'btn btn-sm btn-secondary', href: `#/rooms/${r.id}` }, 'Tham gia ghế')
-                  )
-                )
-              )
-            )
-      );
-      container.appendChild(relatedSection);
-
+      container.appendChild(dossierGrid);
       this.mountPoint.appendChild(container);
+
+      // Load related active rooms
+      this.loadRelatedRooms(game);
     } catch (err) {
       container.appendChild(
         h('div', { className: 'error-state text-center' },
@@ -133,6 +172,49 @@ export class GameDetailPage {
         )
       );
       this.mountPoint.appendChild(container);
+    }
+  }
+
+  async loadRelatedRooms(game) {
+    const box = this.mountPoint.querySelector('#related-rooms-container');
+    if (!box) return;
+
+    try {
+      const res = await apiService.getPublicRooms({ gameId: game.id });
+      const rooms = res.data;
+      box.innerHTML = '';
+      box.appendChild(h('h3', { className: 'dossier-section-title' }, `Phòng Đang Chiêu Mộ Cho Kịch Bản Này (${rooms.length})`));
+
+      if (rooms.length === 0) {
+        box.appendChild(
+          h('p', { className: 'text-muted', style: 'padding: 1rem 0;' },
+            'Hiện chưa có phòng nào mở cho kịch bản này. Hãy là người đầu tiên khai mở phòng!'
+          )
+        );
+        return;
+      }
+
+      const list = h('div', { style: 'display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;' });
+      rooms.forEach((r) => {
+        const item = h('div', {
+          style: 'display: flex; justify-content: space-between; align-items: center; background: var(--color-bg-surface-1); border: 1px solid var(--color-border-subtle); padding: 1rem 1.25rem; border-radius: var(--radius-xs);'
+        },
+          h('div', {},
+            h('div', { style: 'display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.25rem;' },
+              h('span', { className: 'font-mono text-gold' }, r.code),
+              renderStatusBadge(r.status)
+            ),
+            h('small', { className: 'text-muted' },
+              `Bắt đầu: ${formatDateTime(r.session_start_time)} • Đã có ${r.participants.length}/${game.max_players} thám tử`
+            )
+          ),
+          h('a', { className: 'btn btn-sm btn-secondary', href: `#/rooms/${r.id}` }, 'Vào Ghế')
+        );
+        list.appendChild(item);
+      });
+      box.appendChild(list);
+    } catch {
+      box.innerHTML = '<p class="text-muted">Không thể tải danh sách phòng liên quan.</p>';
     }
   }
 }
