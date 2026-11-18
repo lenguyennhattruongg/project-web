@@ -23,29 +23,35 @@ export class HomePage {
     // 1. Cinematic Hero Section (Atmospheric Noir)
     const hero = h('section', { className: 'home-hero' },
       h('div', { className: 'hero-ambient-glow' }),
+      h('div', { className: 'hero-ambient-crimson' }),
       h('div', { className: 'hero-content container' },
-        h('span', { className: 'hero-eyebrow' },
-          renderIcon('sparkles'), ' MẬT VỤ SALON • TRẢI NGHIỆM JUBENSHA CAO CẤP'
-        ),
-        h('h1', { className: 'hero-title' },
-          'Vén Màn Bí Ẩn.', h('br'),
-          h('span', { className: 'hero-title-accent' }, 'Tìm Ra Kẻ Thủ Ác.')
-        ),
-        h('p', { className: 'hero-subtitle' },
-          'Khi cánh cửa mật thất khép lại, bạn không còn là chính mình. Bước vào không gian Kịch Bản Sát — nơi sự thật bị chôn vùi dưới những mảnh ký ức vụn vỡ, và mỗi người ngồi cùng bàn đều có thể là kẻ sát nhân.'
-        ),
-        h('div', { className: 'hero-actions' },
-          h('a', { className: 'btn btn-primary btn-lg', href: '#/games' },
-            'Khám phá 42 Hồ Sơ Án', renderIcon('chevronRight')
+        h('div', { className: 'hero-editorial-wrap' },
+          h('span', { className: 'hero-eyebrow' },
+            renderIcon('sparkles'), ' MẬT VỤ SALON • TRẢI NGHIỆM JUBENSHA CAO CẤP'
           ),
-          h('a', { className: 'btn btn-secondary btn-lg', href: '#/rooms' },
-            'Bảng Lịch Trình Chiêu Mộ'
+          h('h1', { className: 'hero-title' },
+            'Vén Màn Bí Ẩn.', h('br'),
+            h('span', { className: 'hero-title-accent' }, 'Tìm Ra Kẻ Thủ Ác.')
+          ),
+          h('p', { className: 'hero-subtitle' },
+            'Khi cánh cửa mật thất khép lại, bạn không còn là chính mình. Bước vào không gian Kịch Bản Sát — nơi sự thật bị chôn vùi dưới những mảnh ký ức vụn vỡ, và mỗi người ngồi cùng bàn đều có thể là kẻ sát nhân.'
+          ),
+          h('div', { className: 'hero-actions' },
+            h('a', { className: 'btn btn-primary btn-lg', href: '#/games' },
+              'Khám phá 42 Hồ Sơ Án', renderIcon('chevronRight')
+            ),
+            h('a', { className: 'btn btn-secondary btn-lg hero-btn-secondary', href: '#/rooms' },
+              h('span', { className: 'beacon-dot' }),
+              'Bảng Lịch Trình Chiêu Mộ'
+            )
+          ),
+          h('div', { className: 'hero-noir-ticker' },
+            h('span', {}, renderIcon('shield'), ' LAT 21°01\'N • LONG 105°51\'E'),
+            h('span', { className: 'ticker-sep' }, '•'),
+            h('span', { className: 'ticker-badge-gold' }, 'SALON PRIVÉ'),
+            h('span', { className: 'ticker-sep' }, '•'),
+            h('span', {}, renderIcon('check'), ' V16 BUSINESS FREEZE')
           )
-        ),
-        h('div', { className: 'hero-noir-ticker' },
-          h('span', {}, renderIcon('shield'), ' LAT 21°01\'N • LONG 105°51\'E'),
-          h('span', {}, 'SALON PRIVÉ'),
-          h('span', {}, renderIcon('check'), ' V16 BUSINESS FREEZE')
         )
       )
     );
@@ -159,15 +165,25 @@ export class HomePage {
           h('p', { className: 'text-muted' }, 'Kịch bản trinh thám suy lý đỉnh cao được giới phê bình đánh giá 9.8/10.')
         ),
         h('div', { className: 'spotlight-card' },
-          h('div', {
-            className: 'spotlight-poster-wrapper',
-            innerHTML: generateGamePosterSvg('Martinez Chết Tại Kinh Kỳ Quán', false, 400, 560),
-          }),
+          h('div', { className: 'spotlight-poster-wrapper' },
+            h('img', {
+              src: './assets/images/martinez_mountain_inn.jpg',
+              alt: 'Bìa hồ sơ án: Martinez Chết Tại Kinh Kỳ Quán',
+              className: 'spotlight-poster-img',
+              loading: 'lazy',
+              onerror: (e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.innerHTML = generateGamePosterSvg('Martinez Chết Tại Kinh Kỳ Quán', false, 400, 560);
+              }
+            }),
+            h('div', { className: 'spotlight-poster-overlay' }),
+            h('div', { className: 'spotlight-dossier-badge' }, 'HỒ SƠ ÁN #41 • SUY LÝ CỔ ĐIỂN')
+          ),
           h('div', { className: 'spotlight-info' },
             h('span', { className: 'spotlight-tag' }, renderIcon('shield'), ' KIỆT TÁC SUY LÝ CỔ ĐIỂN'),
             h('h3', { className: 'spotlight-title' }, 'Martinez Chết Tại Kinh Kỳ Quán'),
             h('p', { className: 'spotlight-synopsis' },
-              'Một đêm bão tuyết cô lập toàn bộ quán trọ cổ kính. Khi tiếng chuông nửa đêm vang lên, thi thể của nhà quý tộc Martinez được phát hiện trong mật thất kín mít không một dấu vết đột nhập. Tám vị khách có mặt đều mang theo những động cơ giết người không thể chối bỏ...'
+              'Một đêm bão tuyết cô lập toàn bộ quán trọ cổ kính trên đỉnh núi. Khi tiếng chuông nửa đêm vang lên, thi thể của nhà quý tộc Martinez được phát hiện trong mật thất kín mít không một dấu vết đột nhập. Tám vị khách có mặt đều mang theo những động cơ giết người không thể chối bỏ...'
             ),
             h('div', { className: 'spotlight-specs' },
               h('div', { className: 'spec-item' },
@@ -184,14 +200,14 @@ export class HomePage {
               ),
               h('div', { className: 'spec-item' },
                 h('span', { className: 'spec-label' }, 'Giá cơ sở'),
-                h('span', { className: 'spec-val text-gold' }, '189.000đ')
+                h('span', { className: 'spec-val text-gold font-mono' }, '189.000 VNĐ')
               )
             ),
             h('div', { className: 'spotlight-actions' },
-              h('a', { className: 'btn btn-primary btn-lg', href: '#/player/create-room?gameId=41' },
+              h('a', { className: 'btn btn-primary btn-lg', href: '#/player/create-room?game_id=game_041' },
                 'Tạo Phòng Chơi Ngay', renderIcon('chevronRight')
               ),
-              h('a', { className: 'btn btn-secondary', href: '#/games/41', style: 'margin-left: 1rem;' },
+              h('a', { className: 'btn btn-secondary btn-lg hero-btn-secondary', href: '#/games/game_041' },
                 'Xem Hồ Sơ Chi Tiết'
               )
             )
@@ -219,15 +235,64 @@ export class HomePage {
     );
     container.appendChild(liveSection);
 
-    // 7. Footer
+    // 7. Editorial Colophon Footer
     const footer = h('footer', { className: 'app-footer' },
-      h('div', { className: 'container footer-content' },
-        h('div', { className: 'footer-brand' },
-          h('h3', { className: 'brand-name' }, BRAND.name),
-          h('p', { className: 'text-muted' }, BRAND.tagline)
+      h('div', { className: 'container footer-inner' },
+        h('div', { className: 'footer-main-grid' },
+          h('div', { className: 'footer-brand-col' },
+            h('div', { className: 'footer-brand-header' },
+              h('span', { className: 'footer-brand-seal' }, 'KS'),
+              h('div', {},
+                h('h3', { className: 'brand-name' }, BRAND.name),
+                h('span', { className: 'footer-brand-sub' }, 'JUBENSHA SALON PRIVÉ')
+              )
+            ),
+            h('p', { className: 'footer-desc' },
+              'Nền tảng đặt lịch chơi kịch bản sát nhập vai giải đố cao cấp đầu tiên tại Việt Nam với hệ thống mật thất độc lập và quy trình quản trò V16 chuẩn mực.'
+            ),
+            h('div', { className: 'footer-specs-badge' },
+              renderIcon('shield'), ' PHIÊN BẢN V16 • TẤT CẢ QUY TRÌNH ĐÃ ĐÓNG BĂNG'
+            )
+          ),
+          h('div', { className: 'footer-nav-col' },
+            h('h4', { className: 'footer-col-title' }, 'Khám Phá'),
+            h('ul', { className: 'footer-links' },
+              h('li', {}, h('a', { href: '#/games' }, '42 Hồ Sơ Kịch Bản')),
+              h('li', {}, h('a', { href: '#/rooms' }, 'Phòng Chơi Đang Tuyển')),
+              h('li', {}, h('a', { href: '#/games/game_041' }, 'Tác Phẩm Tâm Điểm')),
+              h('li', {}, h('a', { href: '#/player/create-room' }, 'Khởi Tạo Vụ Án Mới'))
+            )
+          ),
+          h('div', { className: 'footer-nav-col' },
+            h('h4', { className: 'footer-col-title' }, 'Phân Hệ Portal'),
+            h('ul', { className: 'footer-links' },
+              h('li', {}, h('a', { href: '#/player/dashboard' }, 'Player Portal (Thám tử)')),
+              h('li', {}, h('a', { href: '#/dm/dashboard' }, 'DM Portal (Quản trò)')),
+              h('li', {}, h('a', { href: '#/admin/dashboard' }, 'Admin Ops Center (Điều hành)')),
+              h('li', {}, h('a', { href: '#/player/history' }, 'Lịch Sử & Hoàn Cọc'))
+            )
+          ),
+          h('div', { className: 'footer-nav-col' },
+            h('h4', { className: 'footer-col-title' }, 'Cam Kết V16'),
+            h('ul', { className: 'footer-links' },
+              h('li', {}, h('span', { className: 'footer-link-text' }, 'Cọc 50.000đ/người cố định')),
+              h('li', {}, h('span', { className: 'footer-link-text' }, 'Hoàn tiền khi hủy ≥24h')),
+              h('li', {}, h('span', { className: 'footer-link-text' }, 'DM chuẩn bị tối thiểu 12h')),
+              h('li', {}, h('span', { className: 'footer-link-text' }, 'Hạn thành lập phòng 4h'))
+            )
+          )
         ),
-        h('div', { className: 'footer-meta text-muted' },
-          '© 2026 Kịch Bản Sát V16 • Nền tảng đặt lịch chơi Jubensha trực tuyến chuẩn mực.'
+        h('div', { className: 'footer-bottom-bar' },
+          h('span', { className: 'footer-copyright' },
+            '© 2026 Kịch Bản Sát • Dark Cinematic Luxury Jubensha Platform. Toàn quyền bảo lưu.'
+          ),
+          h('div', { className: 'footer-bottom-meta' },
+            h('span', {}, 'MẬT THẤT BIỆT LẬP'),
+            h('span', { className: 'meta-sep' }, '•'),
+            h('span', {}, 'HÀ NỘI — SÀI GÒN'),
+            h('span', { className: 'meta-sep' }, '•'),
+            h('span', {}, 'STANDALONE ES MODULES')
+          )
         )
       )
     );
@@ -283,8 +348,10 @@ export class HomePage {
           ),
           h('td', { className: 'case-time-pill' }, formatDateTime(room.session_start_time)),
           h('td', {},
-            h('strong', {}, `${room.participants.length}`),
-            h('span', { className: 'text-muted' }, ` / ${game.data.max_players} thám tử`)
+            h('span', { className: 'case-seats-pill' },
+              h('strong', {}, `${room.participants.length}`),
+              h('span', { className: 'text-muted' }, ` / ${game.data.max_players} thám tử`)
+            )
           ),
           h('td', {},
             room.formation_deadline

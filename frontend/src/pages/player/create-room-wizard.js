@@ -17,7 +17,7 @@ export class CreateRoomWizard {
   constructor(mountPoint, { query, router }) {
     this.mountPoint = mountPoint;
     this.router = router;
-    this.preselectedGameId = query.game_id || null;
+    this.preselectedGameId = query.game_id || query.gameId || null;
     this.currentStep = 1;
 
     this.selectedGame = null;
@@ -87,7 +87,10 @@ export class CreateRoomWizard {
     const res = await apiService.getGames();
     this.games = res.data;
     if (this.preselectedGameId) {
-      this.selectedGame = this.games.find((g) => String(g.id) === String(this.preselectedGameId)) || null;
+      this.selectedGame = this.games.find((g) => 
+        String(g.id) === String(this.preselectedGameId) ||
+        g.id === `game_${String(this.preselectedGameId).padStart(3, '0')}`
+      ) || null;
       if (this.selectedGame) {
         this.currentStep = 2; // Auto-advance to date picker if pre-selected
       }
