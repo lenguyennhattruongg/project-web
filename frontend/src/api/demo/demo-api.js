@@ -192,6 +192,62 @@ export const demoApi = {
     };
   },
 
+  async getDmAvailability(dmId = null) {
+    await delay(200);
+    const user = auth.getUser();
+    const targetId = dmId || user?.id || 'user_dm_01';
+    const schedule = sharedStore.getDmAvailability(targetId);
+    return {
+      success: true,
+      data: schedule,
+    };
+  },
+
+  async saveDmAvailability(schedule, dmId = null) {
+    await delay(350);
+    const user = auth.getUser();
+    const targetId = dmId || user?.id || 'user_dm_01';
+    const updated = sharedStore.saveDmAvailability(targetId, schedule);
+    return {
+      success: true,
+      data: updated,
+      message: 'Đã lưu cấu hình ma trận lịch rảnh thành công!',
+    };
+  },
+
+  async updateSessionStatus(roomId, status) {
+    await delay(400);
+    const user = auth.getUser();
+    const room = sharedStore.updateSessionStatus(roomId, user?.id || 'user_dm_01', status);
+    return {
+      success: true,
+      data: room,
+      message: status === 'IN_PROGRESS' ? 'Đã kích hoạt bắt đầu phiên chơi.' : 'Đã xác nhận hoàn thành phiên chơi.',
+    };
+  },
+
+  async updateParticipantAttendance(roomId, participantId, isPresent, note = '') {
+    await delay(300);
+    const user = auth.getUser();
+    const room = sharedStore.updateParticipantAttendance(roomId, user?.id || 'user_dm_01', participantId, isPresent, note);
+    return {
+      success: true,
+      data: room,
+      message: `Đã cập nhật điểm danh: ${isPresent ? 'Có mặt' : 'Vắng mặt'}.`,
+    };
+  },
+
+  async confirmRemainingPayment(roomId, participantId, amount) {
+    await delay(400);
+    const user = auth.getUser();
+    const res = sharedStore.confirmRemainingPayment(roomId, user?.id || 'user_dm_01', participantId, amount, user?.name);
+    return {
+      success: true,
+      data: res,
+      message: `Đã xác nhận thu ${Number(amount).toLocaleString('vi-VN')} đ tại quán. Biên nhận: ${res.receipt_code}`,
+    };
+  },
+
   // --- Admin Operations ---
   async getAdminQueue() {
     await delay(300);

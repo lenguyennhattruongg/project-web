@@ -1579,6 +1579,300 @@ a:hover {
 }
 
 /* ==========================================================================
+   DM Master Command Station & Availability Matrix
+   ========================================================================== */
+.dm-command-hero {
+  padding: 2.5rem 0 1.5rem 0;
+  border-bottom: 1px solid var(--color-noir-divider);
+  margin-bottom: 2rem;
+}
+
+.dm-command-title {
+  font-size: 2.8rem;
+  margin: 0.5rem 0 0.25rem 0;
+  color: var(--color-text-primary);
+}
+
+.dm-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-noir-divider);
+  border-radius: var(--radius-xs);
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.dm-command-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.dm-code-charter {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 1.75rem;
+}
+
+.charter-rule-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.charter-rule-list li {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.charter-rule-list li strong {
+  color: var(--color-text-primary);
+}
+
+.buffer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.buffer-badge.buffer-safe {
+  background: rgba(46, 125, 50, 0.15);
+  color: #81c784;
+  border: 1px solid rgba(46, 125, 50, 0.3);
+}
+
+.buffer-badge.buffer-warning {
+  background: rgba(232, 163, 61, 0.15);
+  color: var(--color-status-amber);
+  border: 1px solid rgba(232, 163, 61, 0.3);
+}
+
+.assignment-dossier-card {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  transition: all var(--transition-fast);
+}
+
+.assignment-dossier-card:hover {
+  border-color: var(--color-border-subtle);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.assignment-meta-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+/* Availability Matrix Board */
+.matrix-board-container {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.matrix-presets-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-noir-divider);
+}
+
+.matrix-grid-7days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+}
+
+.matrix-day-col {
+  background: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.matrix-day-header {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-accent-gold);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-noir-divider);
+}
+
+.shift-cell-toggle {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.shift-cell-toggle:hover {
+  border-color: var(--color-accent-gold);
+}
+
+.shift-cell-toggle.is-available {
+  background: rgba(196, 163, 107, 0.12);
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
+  box-shadow: 0 0 12px rgba(196, 163, 107, 0.2);
+}
+
+.shift-cell-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.shift-cell-hours {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+}
+
+.shift-cell-toggle.is-available .shift-cell-hours {
+  color: var(--color-accent-gold);
+}
+
+.dirty-indicator-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-xs);
+}
+
+.dirty-indicator-pill.is-clean {
+  color: #81c784;
+  background: rgba(46, 125, 50, 0.1);
+  border: 1px solid rgba(46, 125, 50, 0.25);
+}
+
+.dirty-indicator-pill.is-dirty {
+  color: var(--color-status-amber);
+  background: rgba(232, 163, 61, 0.1);
+  border: 1px solid rgba(232, 163, 61, 0.25);
+}
+
+/* Live Session Terminal */
+.live-session-terminal-header {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.session-ops-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.checklist-box {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 1.5rem;
+}
+
+.checklist-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.checklist-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+}
+
+.checklist-label input[type="checkbox"] {
+  accent-color: var(--color-accent-gold);
+  width: 18px;
+  height: 18px;
+}
+
+.roster-terminal-panel {
+  background: var(--color-bg-surface-1);
+  border: 1px solid var(--color-border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 1.75rem;
+}
+
+.roster-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-noir-divider);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.roster-item-row:last-child {
+  border-bottom: none;
+}
+
+.receipt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #81c784;
+  background: rgba(46, 125, 50, 0.12);
+  border: 1px solid rgba(46, 125, 50, 0.3);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-xs);
+}
+
+/* ==========================================================================
    Modal & Dialogs
    ========================================================================== */
 .modal-backdrop {
@@ -1723,8 +2017,20 @@ a:hover {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  .dossier-metrics-strip {
+  .dm-command-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .dossier-metrics-strip,
+  .dm-metrics-strip {
+    grid-template-columns: 1fr;
+  }
+  .session-ops-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .matrix-grid-7days {
+    grid-template-columns: repeat(2, 1fr);
   }
   .metric-strip-item {
     border-right: none;
@@ -1794,6 +2100,10 @@ a:hover {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
+  }
+
+  .matrix-grid-7days {
+    grid-template-columns: 1fr;
   }
 
   .main-navbar .nav-links { display: none; } /* Use mobile bottom nav */

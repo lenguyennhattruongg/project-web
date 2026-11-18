@@ -132,3 +132,23 @@ export function isReasonRequired(actionKey) {
   ];
   return REQUIRED_ACTIONS.includes(actionKey);
 }
+
+/**
+ * Kiểm tra khoảng đệm chuẩn bị tối thiểu 12 giờ cho DM (V16)
+ * Buffer >= 12h giữa lúc DM nhận/xác nhận ca và giờ bắt đầu phiên chơi.
+ */
+export function checkDmPrepBuffer(sessionStartTime, now = new Date()) {
+  if (!sessionStartTime) {
+    return { valid: false, hoursRemaining: 0, violated: true, requiredHours: RULES.DM_PREP_MIN_HOURS };
+  }
+  const sessionDate = new Date(sessionStartTime);
+  const diffMs = sessionDate.getTime() - new Date(now).getTime();
+  const hoursRemaining = diffMs / (1000 * 60 * 60);
+  const violated = hoursRemaining < RULES.DM_PREP_MIN_HOURS;
+  return {
+    valid: !violated,
+    violated,
+    hoursRemaining: Math.max(0, Math.round(hoursRemaining * 10) / 10),
+    requiredHours: RULES.DM_PREP_MIN_HOURS,
+  };
+}

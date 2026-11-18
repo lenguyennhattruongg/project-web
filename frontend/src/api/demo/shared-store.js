@@ -312,11 +312,43 @@ function getInitialStore() {
     { id: 'notif_04', user_id: 'user_admin_01', type: 'ADMIN_ALERT', title: 'Cần phân công DM', message: 'Phòng PHONG-002 đã đủ người và đang chờ xếp Quản trò.', is_read: false, created_at: getFutureIso(-2), target_hash: '#/admin/dm-assignments' },
   ];
 
+  // 7. DM Availability Matrix (Thứ 2 đến CN x 3 Ca: Sáng, Chiều, Tối)
+  const dmAvailability = {
+    user_dm_01: {
+      1: { morning: true, afternoon: false, night: true },
+      2: { morning: false, afternoon: true, night: true },
+      3: { morning: true, afternoon: true, night: false },
+      4: { morning: false, afternoon: false, night: true },
+      5: { morning: true, afternoon: true, night: true },
+      6: { morning: true, afternoon: true, night: true },
+      0: { morning: false, afternoon: true, night: true },
+    },
+    user_dm_02: {
+      1: { morning: true, afternoon: true, night: true },
+      2: { morning: true, afternoon: true, night: true },
+      3: { morning: false, afternoon: false, night: false },
+      4: { morning: true, afternoon: true, night: true },
+      5: { morning: true, afternoon: true, night: true },
+      6: { morning: true, afternoon: true, night: true },
+      0: { morning: true, afternoon: true, night: true },
+    },
+    user_dm_03: {
+      1: { morning: false, afternoon: false, night: true },
+      2: { morning: false, afternoon: false, night: true },
+      3: { morning: false, afternoon: false, night: true },
+      4: { morning: false, afternoon: false, night: true },
+      5: { morning: true, afternoon: true, night: true },
+      6: { morning: true, afternoon: true, night: true },
+      0: { morning: true, afternoon: true, night: true },
+    },
+  };
+
   return {
     games: GAMES_CATALOG,
     gameRooms,
     physicalRooms,
     dmStaff,
+    dmAvailability,
     refunds,
     auditLogs,
     notifications,
@@ -334,7 +366,12 @@ class SharedStore {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
-          return JSON.parse(raw);
+          const parsed = JSON.parse(raw);
+          if (!parsed.dmAvailability) {
+            parsed.dmAvailability = getInitialStore().dmAvailability;
+            this.save(parsed);
+          }
+          return parsed;
         }
       } catch (e) {
         console.warn('Failed to parse localStorage store, fallback to initial store', e);
@@ -556,25 +593,276 @@ class SharedStore {
   dmRespondAssignment(roomId, dmId, isAccepted, reason = '') {
     const room = this.data.gameRooms.find((r) => r.id === roomId);
     if (!room || !room.dm_assignment || room.dm_assignment.dm_id !== dmId) {
-      throw new Error('Phân công không tồn tại.');
+      throw new Error('Phân công không tồn tại hoặc bạn không có quyền thao tác trên ca này.');
     }
 
+    if (room.dm_assignment.status !== DM_ASSIGNMENT_STATUS.PENDING) {
+      throw new Error(`Phân công đã ở trạng thái ${room.dm_assignment.status}, không thể phản hồi lại.`);
+    }
+
+    const dm = this.data.dmStaff.find((d) => d.id === dmId);
+    const dmName = dm?.name || room.dm_assignment.dm_name;
+
     if (isAccepted) {
+      // Calculate buffer
+      const hoursUntilSession = (new Date(room.session_start_time).getTime() - Date.now()) / (3600 * 1000);
+      const bufferViolated = hoursUntilSession < 12;
+
       room.dm_assignment.status = DM_ASSIGNMENT_STATUS.ACCEPTED;
       room.dm_assignment.accepted_at = new Date().toISOString();
+      room.dm_assignment.prep_buffer_hours = Math.max(0, Math.round(hoursUntilSession * 10) / 10);
+      room.dm_assignment.prep_buffer_warning = bufferViolated;
       room.status = GAMEROOM_STATUS.WAITING_FOR_ORGANIZATION;
+
+      // Audit Log
+      this.data.auditLogs.unshift({
+        id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        actor_name: dmName,
+        actor_id: dmId,
+        action: 'ACCEPT_ASSIGNMENT',
+        target_type: 'DMAssignment',
+        target_id: room.dm_assignment.id,
+        details: `Quản trò ${dmName} tiếp nhận phân công dẫn dắt phòng ${room.code}. Khoảng đệm chuẩn bị: ${Math.round(hoursUntilSession * 10) / 10}h.`,
+        created_at: new Date().toISOString(),
+      });
     } else {
-      if (!reason || !reason.trim()) {
-        throw new Error('Bắt buộc phải cung cấp lý do khi từ chối phân công dẫn dắt.');
+      if (!reason || reason.trim().length < 5) {
+        throw new Error('Bắt buộc phải cung cấp lý do rõ ràng (tối thiểu 5 ký tự) khi từ chối phân công dẫn dắt.');
       }
+      const trimmedReason = reason.trim();
       room.dm_assignment.status = DM_ASSIGNMENT_STATUS.REJECTED;
-      room.dm_assignment.rejected_reason = reason.trim();
+      room.dm_assignment.rejected_reason = trimmedReason;
+      room.dm_assignment.rejected_at = new Date().toISOString();
       // Từ chối không hủy phòng, chuyển lại WAITING_FOR_DM
       room.status = GAMEROOM_STATUS.WAITING_FOR_DM;
+
+      // Notify Admin
+      this.data.notifications.unshift({
+        id: `notif_${Date.now()}`,
+        user_id: 'user_admin_01',
+        type: 'DM_REJECTED',
+        title: `Quản trò từ chối phòng ${room.code}`,
+        message: `Quản trò ${dmName} từ chối phân công phòng ${room.code}. Lý do: ${trimmedReason}. Phòng đã được hoàn trả lại hàng đợi chờ Quản trị viên xếp Quản trò mới.`,
+        is_read: false,
+        created_at: new Date().toISOString(),
+        target_hash: '#/admin/dm-assignments',
+      });
+
+      // Audit Log
+      this.data.auditLogs.unshift({
+        id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        actor_name: dmName,
+        actor_id: dmId,
+        action: 'REJECT_ASSIGNMENT',
+        target_type: 'DMAssignment',
+        target_id: room.dm_assignment.id,
+        details: `Quản trò ${dmName} từ chối phân công phòng ${room.code}. Lý do: ${trimmedReason}. Phòng chuyển về WAITING_FOR_DM.`,
+        created_at: new Date().toISOString(),
+      });
     }
 
     this.save(this.data);
     return room;
+  }
+
+  getDmAvailability(dmId) {
+    if (!this.data.dmAvailability) {
+      this.data.dmAvailability = getInitialStore().dmAvailability;
+    }
+    const defaultSchedule = {
+      1: { morning: true, afternoon: true, night: true },
+      2: { morning: true, afternoon: true, night: true },
+      3: { morning: true, afternoon: true, night: true },
+      4: { morning: true, afternoon: true, night: true },
+      5: { morning: true, afternoon: true, night: true },
+      6: { morning: true, afternoon: true, night: true },
+      0: { morning: true, afternoon: true, night: true },
+    };
+    return JSON.parse(JSON.stringify(this.data.dmAvailability[dmId] || defaultSchedule));
+  }
+
+  saveDmAvailability(dmId, schedule) {
+    if (!schedule || typeof schedule !== 'object') {
+      throw new Error('Dữ liệu ma trận lịch rảnh không hợp lệ.');
+    }
+    // Validate days 0 to 6
+    for (let day = 0; day <= 6; day++) {
+      if (!schedule[day] || typeof schedule[day] !== 'object') {
+        throw new Error(`Thiếu cấu hình ca trực cho ngày ${day} (0=CN, 1=T2..6=T7).`);
+      }
+      schedule[day] = {
+        morning: Boolean(schedule[day].morning),
+        afternoon: Boolean(schedule[day].afternoon),
+        night: Boolean(schedule[day].night),
+      };
+    }
+
+    if (!this.data.dmAvailability) {
+      this.data.dmAvailability = {};
+    }
+    this.data.dmAvailability[dmId] = schedule;
+
+    const dm = this.data.dmStaff.find((d) => d.id === dmId);
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: dm?.name || dmId,
+      actor_id: dmId,
+      action: 'UPDATE_DM_AVAILABILITY',
+      target_type: 'DMAvailability',
+      target_id: dmId,
+      details: `Quản trò ${dm?.name || dmId} cập nhật ma trận lịch rảnh tuần.`,
+      created_at: new Date().toISOString(),
+    });
+
+    this.save(this.data);
+    return this.data.dmAvailability[dmId];
+  }
+
+  updateSessionStatus(roomId, dmId, newStatus) {
+    const room = this.data.gameRooms.find((r) => r.id === roomId);
+    if (!room || !room.dm_assignment || room.dm_assignment.dm_id !== dmId) {
+      throw new Error('Bạn không có quyền quản lý ca chơi này.');
+    }
+
+    if (![SESSION_STATUS.IN_PROGRESS, SESSION_STATUS.COMPLETED].includes(newStatus)) {
+      throw new Error(`Trạng thái phiên chơi ${newStatus} không hợp lệ.`);
+    }
+
+    const dm = this.data.dmStaff.find((d) => d.id === dmId);
+    const dmName = dm?.name || room.dm_assignment.dm_name;
+
+    room.session = room.session || {
+      id: `ses_${room.id}`,
+      room_id: room.id,
+      status: SESSION_STATUS.SCHEDULED,
+    };
+
+    if (newStatus === SESSION_STATUS.IN_PROGRESS) {
+      if (room.session.status === SESSION_STATUS.COMPLETED) {
+        throw new Error('Phiên chơi đã hoàn tất, không thể bắt đầu lại.');
+      }
+      room.session.status = SESSION_STATUS.IN_PROGRESS;
+      room.session.started_at = room.session.started_at || new Date().toISOString();
+      room.status = GAMEROOM_STATUS.READY_FOR_SESSION;
+
+      this.data.auditLogs.unshift({
+        id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        actor_name: dmName,
+        actor_id: dmId,
+        action: 'START_SESSION',
+        target_type: 'Session',
+        target_id: room.session.id,
+        details: `Quản trò ${dmName} kích hoạt bắt đầu phiên chơi tại phòng ${room.code}.`,
+        created_at: new Date().toISOString(),
+      });
+    } else if (newStatus === SESSION_STATUS.COMPLETED) {
+      room.session.status = SESSION_STATUS.COMPLETED;
+      room.session.completed_at = new Date().toISOString();
+      room.status = GAMEROOM_STATUS.COMPLETED;
+
+      this.data.auditLogs.unshift({
+        id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        actor_name: dmName,
+        actor_id: dmId,
+        action: 'COMPLETE_SESSION',
+        target_type: 'Session',
+        target_id: room.session.id,
+        details: `Quản trò ${dmName} xác nhận hoàn thành phiên chơi phòng ${room.code}.`,
+        created_at: new Date().toISOString(),
+      });
+    }
+
+    this.save(this.data);
+    return room;
+  }
+
+  updateParticipantAttendance(roomId, dmId, participantId, isPresent, note = '') {
+    const room = this.data.gameRooms.find((r) => r.id === roomId);
+    if (!room || !room.dm_assignment || room.dm_assignment.dm_id !== dmId) {
+      throw new Error('Bạn không có quyền điểm danh ca chơi này.');
+    }
+
+    const participant = room.participants.find((p) => p.id === participantId || p.user_id === participantId);
+    if (!participant) {
+      throw new Error('Không tìm thấy thành viên trong danh sách phòng.');
+    }
+
+    const dm = this.data.dmStaff.find((d) => d.id === dmId);
+    const dmName = dm?.name || room.dm_assignment.dm_name;
+
+    participant.attendance = isPresent ? 'PRESENT' : 'ABSENT';
+    participant.attendance_recorded_at = new Date().toISOString();
+    if (note && note.trim()) {
+      participant.attendance_note = note.trim();
+    }
+
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: dmName,
+      actor_id: dmId,
+      action: 'RECORD_ATTENDANCE',
+      target_type: 'RoomParticipant',
+      target_id: participant.id,
+      details: `Quản trò ${dmName} ghi nhận điểm danh cho ${participant.name}: ${isPresent ? 'CÓ MẶT' : 'VẮNG MẶT'}.`,
+      created_at: new Date().toISOString(),
+    });
+
+    this.save(this.data);
+    return room;
+  }
+
+  confirmRemainingPayment(roomId, dmId, participantId, amount, collectedBy) {
+    const room = this.data.gameRooms.find((r) => r.id === roomId);
+    if (!room || !room.dm_assignment || room.dm_assignment.dm_id !== dmId) {
+      throw new Error('Bạn không có quyền thu tiền cho ca chơi này.');
+    }
+
+    const participant = room.participants.find((p) => p.id === participantId || p.user_id === participantId);
+    if (!participant) {
+      throw new Error('Không tìm thấy thành viên trong danh sách phòng.');
+    }
+
+    if (participant.remaining_payment && participant.remaining_payment.status === 'PAID') {
+      throw new Error(`Khoản còn lại tại quán của ${participant.name} đã được thu trước đó (Mã biên nhận: ${participant.remaining_payment.receipt_code}). Không thể thu trùng.`);
+    }
+
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount < 0) {
+      throw new Error('Số tiền thu tại quán không hợp lệ.');
+    }
+
+    const dm = this.data.dmStaff.find((d) => d.id === dmId);
+    const collectorName = collectedBy || dm?.name || 'Quản trò';
+    const receiptCode = `REC-${Date.now().toString().slice(-6)}-${(participant.id || 'P').slice(-4).toUpperCase()}`;
+
+    participant.remaining_payment = {
+      status: 'PAID',
+      amount: numAmount,
+      deposit_deducted: 50000,
+      collected_by: collectorName,
+      collected_at: new Date().toISOString(),
+      receipt_code: receiptCode,
+    };
+
+    this.data.auditLogs.unshift({
+      id: `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      actor_name: collectorName,
+      actor_id: dmId,
+      action: 'COLLECT_REMAINING_PAYMENT',
+      target_type: 'PlayerPayment',
+      target_id: receiptCode,
+      details: `${collectorName} xác nhận thu ${numAmount.toLocaleString('vi-VN')} đ tại quán cho thám tử ${participant.name} (Đã khấu trừ 50.000đ cọc). Biên nhận: ${receiptCode}.`,
+      created_at: new Date().toISOString(),
+    });
+
+    this.save(this.data);
+    return {
+      success: true,
+      participant,
+      receipt_code: receiptCode,
+      amount: numAmount,
+      collected_by: collectorName,
+    };
   }
 
   adminConfirmVenueAndSchedule(roomId, physicalRoomId) {

@@ -52,6 +52,17 @@ class AuthManager {
   }
 
   loadUser() {
+    if (typeof window !== 'undefined' && window.location) {
+      const hashStr = window.location.hash || '';
+      const searchStr = window.location.search || '';
+      const match = hashStr.match(/[?&]role=(PLAYER|DM|ADMIN)/i) || searchStr.match(/[?&]role=(PLAYER|DM|ADMIN)/i);
+      if (match && match[1]) {
+        const targetRole = match[1].toUpperCase();
+        if (DEMO_USERS[targetRole]) {
+          return DEMO_USERS[targetRole];
+        }
+      }
+    }
     if (typeof sessionStorage !== 'undefined') {
       try {
         const stored = sessionStorage.getItem(STORAGE_KEY);
