@@ -1,29 +1,74 @@
 :root {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  /* Typography */
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 
-  /* Color Palette */
-  --color-bg-app: #0f172a;
-  --color-bg-card: #1e293b;
-  --color-bg-card-hover: #334155;
-  --color-border: #334155;
-  --color-text-main: #f8fafc;
-  --color-text-muted: #94a3b8;
+  /* Dark Cinematic Luxury Palette */
+  --color-bg-base: #0B0C0F;
+  --color-bg-surface-1: #15171C;
+  --color-bg-surface-2: #1E2028;
+  --color-bg-surface-3: #282B36;
+  --color-bg-overlay: rgba(11, 12, 15, 0.85);
+
+  --color-border-hairline: rgba(196, 163, 107, 0.18);
+  --color-border-subtle: #262933;
+  --color-border-strong: #383C4A;
+  --color-border-gold: #C4A36B;
+
+  /* Typography Colors */
+  --color-text-primary: #F3F0E9;
+  --color-text-secondary: #92949B;
+  --color-text-muted: #676973;
+  --color-text-gold: #D8B97C;
+  --color-text-inverse: #0B0C0F;
+
+  /* Brand Accents */
+  --color-accent-gold: #C4A36B;
+  --color-accent-gold-hover: #D8B97C;
+  --color-accent-gold-subtle: rgba(196, 163, 107, 0.12);
+  --color-accent-crimson: #B52E36;
+  --color-accent-crimson-hover: #CF3740;
+  --color-accent-crimson-subtle: rgba(181, 46, 54, 0.16);
 
   /* Status Colors */
-  --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
-  --color-success: #10b981;
-  --color-success-bg: rgba(16, 185, 129, 0.15);
-  --color-error: #ef4444;
-  --color-error-bg: rgba(239, 68, 68, 0.15);
-  --color-warning: #f59e0b;
-  --color-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-status-emerald: #4FB39A;
+  --color-status-emerald-bg: rgba(79, 179, 154, 0.15);
+  --color-status-amber: #E8A33D;
+  --color-status-amber-bg: rgba(232, 163, 61, 0.15);
+  --color-status-danger: #E5484D;
+  --color-status-danger-bg: rgba(229, 72, 77, 0.15);
+  --color-status-cyan: #38BDF8;
+  --color-status-cyan-bg: rgba(56, 189, 248, 0.15);
+  --color-status-purple: #A78BFA;
+  --color-status-purple-bg: rgba(167, 139, 250, 0.15);
 
   /* Spacing & Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  /* Shadows & Elevations */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 16px -2px rgba(0, 0, 0, 0.45), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 32px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --shadow-gold: 0 0 24px -4px rgba(196, 163, 107, 0.25);
+  --shadow-crimson: 0 0 24px -4px rgba(181, 46, 54, 0.3);
+
+  /* Legacy aliases for backwards compatibility with health page */
+  --color-bg-app: var(--color-bg-base);
+  --color-bg-card: var(--color-bg-surface-1);
+  --color-bg-card-hover: var(--color-bg-surface-2);
+  --color-border: var(--color-border-subtle);
+  --color-text-main: var(--color-text-primary);
+  --color-primary: var(--color-accent-gold);
+  --color-primary-hover: var(--color-accent-gold-hover);
+  --color-success: var(--color-status-emerald);
+  --color-success-bg: var(--color-status-emerald-bg);
+  --color-error: var(--color-status-danger);
+  --color-error-bg: var(--color-status-danger-bg);
+  --color-warning: var(--color-status-amber);
+  --color-warning-bg: var(--color-status-amber-bg);
 }
