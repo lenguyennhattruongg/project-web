@@ -26,3 +26,6 @@ desktop.ini
 # Temporary & Cache Files
 *.tmp
 *.cache
+
+# Nested extracted folder
+kich-ban-sat-php-main/
