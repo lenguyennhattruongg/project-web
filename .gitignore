@@ -4,7 +4,7 @@
 !.env.example
 
 # Composer Dependencies
-vendor/
+/vendor/
 
 # PHPUnit & Testing Caches
 .phpunit.cache/

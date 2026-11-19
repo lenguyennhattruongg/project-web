@@ -377,12 +377,52 @@ textarea:focus-visible,
   outline-offset: 3px !important;
 }
 
-/* Material 3 High-Emphasis Filled Action */
+/* Material 3 High-Emphasis Filled Action with Gold Luxury Shimmer */
 .btn-primary {
   background: linear-gradient(135deg, #C4A36B 0%, #B39156 100%);
   color: #07080A !important;
   border: 1px solid #DFC18A;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 16px rgba(196, 163, 107, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -70%;
+  width: 45%;
+  height: 200%;
+  background: linear-gradient(
+    65deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  animation: goldShimmerSweep 5s infinite ease-in-out;
+  pointer-events: none;
+}
+@keyframes goldShimmerSweep {
+  0% { left: -70%; }
+  22% { left: 150%; }
+  100% { left: 150%; }
+}
+
+.beacon-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  display: inline-block;
+  box-shadow: 0 0 8px #10B981;
+  animation: beaconPulse 2s infinite ease-in-out;
+  margin-right: 0.4rem;
+  flex-shrink: 0;
+}
+@keyframes beaconPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.6; box-shadow: 0 0 14px #10B981; }
 }
 .btn-primary:hover {
   background: linear-gradient(135deg, #DFC18A 0%, #C4A36B 100%);
@@ -608,9 +648,11 @@ textarea:focus-visible,
   left: 20%;
   width: 650px;
   height: 450px;
-  background: radial-gradient(circle, rgba(196, 163, 107, 0.12), transparent 70%);
+  background: radial-gradient(circle, rgba(196, 163, 107, 0.16), transparent 70%);
   pointer-events: none;
   z-index: 1;
+  will-change: transform;
+  transition: opacity 0.5s ease;
 }
 
 .hero-ambient-crimson {
@@ -619,9 +661,11 @@ textarea:focus-visible,
   right: 10%;
   width: 550px;
   height: 350px;
-  background: radial-gradient(circle, rgba(88, 17, 26, 0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(88, 17, 26, 0.28), transparent 70%);
   pointer-events: none;
   z-index: 1;
+  will-change: transform;
+  transition: opacity 0.5s ease;
 }
 
 .hero-content {

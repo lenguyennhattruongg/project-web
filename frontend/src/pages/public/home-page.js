@@ -9,6 +9,7 @@ import { generateGamePosterSvg } from '../../content/assets.js';
 import { renderStatusBadge } from '../../components/status-badge.js';
 import { renderCountdown } from '../../components/countdown.js';
 import { formatCurrency, formatDateTime } from '../../utils/format.js';
+import { initMotion } from '../../utils/motion.js';
 
 export class HomePage {
   constructor(mountPoint, { router }) {
@@ -301,7 +302,10 @@ export class HomePage {
     this.mountPoint.appendChild(container);
 
     // Populate live forming rooms as Departure Board Table
-    this.loadFeaturedRooms();
+    await this.loadFeaturedRooms();
+
+    // Initialize GSAP & Scroll-Craft animations (Respects prefers-reduced-motion)
+    requestAnimationFrame(() => initMotion());
   }
 
   async loadFeaturedRooms() {
