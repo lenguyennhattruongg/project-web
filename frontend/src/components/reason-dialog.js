@@ -29,7 +29,7 @@ export function showReasonDialog({
 
   const content = h('div', { className: 'reason-dialog-content' },
     showProvisionalBadge
-      ? h('div', { className: 'badge-provisional-note', style: { background: 'rgba(232, 163, 61, 0.12)', border: '1px solid #E8A33D', padding: '0.4rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem', color: '#E8A33D', marginBottom: '0.75rem' } },
+      ? h('div', { className: 'badge-provisional-note' },
           'Lưu ý: Hành động này mặc định yêu cầu lý do bảo toàn audit [PROVISIONAL].'
         )
       : null,

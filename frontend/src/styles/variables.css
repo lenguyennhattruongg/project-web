@@ -1,12 +1,9 @@
 :root {
   /* ==========================================================================
-     KỊCH BẢN SÁT — DARK CINEMATIC LUXURY DESIGN SYSTEM TOKENS
-     Colors strictly locked per specification:
-     1. Abyssal Black (#07080A)
-     2. Charcoal Slate (#16181F)
-     3. Deep Burgundy Blood (#58111A)
-     4. Antique Champagne Gold (#C4A36B)
-     5. Ivory Paper (#F0EBE1)
+     KỊCH BẢN SÁT — OCCULT FORENSIC & BLOOD RED / ABYSSAL BLACK DESIGN SYSTEM
+     Dominant: Abyssal Pitch Black (#050608) & Blood Crimson (#8B0000 / #E63946)
+     Occult Atmosphere: Zero Rounded Corners (0px), Chamfered Dossier Geometry,
+     Forensic Interrogation Sheet Inputs, and Haunting Chiaroscuro Lighting.
      ========================================================================== */
 
   /* Typography Fonts */
@@ -14,69 +11,76 @@
   --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
-  /* Surfaces & Canvases */
-  --color-bg-base: #07080A;              /* Abyssal Black — Primary deep canvas */
-  --color-bg-surface-1: #16181F;        /* Charcoal Slate — Primary elevated surface */
-  --color-bg-surface-2: #21242E;        /* Subtle elevation */
-  --color-bg-surface-3: #2B2F3D;        /* Highlight elevation */
-  --color-bg-overlay: rgba(7, 8, 10, 0.88); /* Noir modal backdrop */
+  /* Surfaces & Canvases (Black & Deep Blood Wine) */
+  --color-bg-base: #050608;              /* Abyssal Void Black */
+  --color-bg-surface-1: #0A0709;        /* Obsidian Crypt Surface */
+  --color-bg-surface-2: #120A0E;        /* Dark Blood Wine Surface */
+  --color-bg-surface-3: #1B0E14;        /* Burnt Burgundy Highlight */
+  --color-bg-overlay: rgba(5, 6, 8, 0.94); /* Occult Interrogation Backdrop */
 
   /* Borders & Dividers */
-  --color-border-hairline: rgba(196, 163, 107, 0.2);
-  --color-border-subtle: #232733;
-  --color-border-strong: #363B4C;
-  --color-border-gold: #C4A36B;          /* Antique Champagne Gold border */
-  --color-noir-divider: rgba(240, 235, 225, 0.08); /* Editorial hairline divider */
+  --color-border-hairline: rgba(139, 0, 0, 0.35);
+  --color-border-subtle: #240A0F;
+  --color-border-strong: #3F1018;
+  --color-border-crimson: #8B0000;      /* Blood Crimson Spine */
+  --color-border-blood: #E63946;        /* Luminescent Scarlet Border */
+  --color-border-gold: #B39255;         /* Muted Pale Brass Gold */
+  --color-noir-divider: rgba(139, 0, 0, 0.22); /* Forensic Hairline Divider */
 
   /* Typography Colors */
-  --color-text-primary: #F0EBE1;        /* Ivory Paper */
-  --color-text-secondary: #A8A398;      /* Warm muted ivory */
-  --color-text-muted: #6E6A63;          /* Dark warm gray */
-  --color-text-gold: #DFC18A;           /* Shimmering gold text */
-  --color-text-inverse: #07080A;        /* Abyssal Black on gold buttons */
+  --color-text-primary: #ECE7DE;        /* Bone Ash Parchment */
+  --color-text-secondary: #9E9689;      /* Forensic Chalk Muted */
+  --color-text-muted: #645C54;          /* Crypt Fog Warm Gray */
+  --color-text-blood: #FF4D5E;          /* Glowing Scarlet Evidence Text */
+  --color-text-crimson: #E63946;
+  --color-text-gold: #C4A36B;           /* Antique Pale Brass */
+  --color-text-inverse: #FFFFFF;        /* Crisp White on Blood Red */
 
-  /* Brand Accents */
-  --color-accent-gold: #C4A36B;         /* Antique Champagne Gold */
-  --color-accent-gold-hover: #DFC18A;
-  --color-accent-gold-subtle: rgba(196, 163, 107, 0.12);
-  --color-accent-crimson: #58111A;      /* Deep Burgundy Blood */
-  --color-accent-crimson-hover: #7A1925;
-  --color-accent-crimson-subtle: rgba(88, 17, 26, 0.3);
+  /* Dominant Brand Accents (Black & Blood Red Primary) */
+  --color-accent-crimson: #8B0000;      /* Deep Blood Crimson (Primary) */
+  --color-accent-crimson-hover: #A71D2A;
+  --color-accent-crimson-subtle: rgba(139, 0, 0, 0.22);
+  --color-accent-blood: #A71D2A;
+  --color-accent-glow: #E63946;         /* Scarlet Laser / Neon Glow */
+  --color-accent-gold: #B39255;         /* Demoted: Antique Tarnished Brass */
+  --color-accent-gold-hover: #C4A36B;
+  --color-accent-gold-subtle: rgba(179, 146, 85, 0.12);
 
   /* Status Tokens */
-  --color-status-emerald: #3FA888;
-  --color-status-emerald-bg: rgba(63, 168, 136, 0.14);
-  --color-status-amber: #D89838;
-  --color-status-amber-bg: rgba(216, 152, 56, 0.14);
-  --color-status-danger: #D83B40;
-  --color-status-danger-bg: rgba(216, 59, 64, 0.14);
+  --color-status-emerald: #2EAF7D;
+  --color-status-emerald-bg: rgba(46, 175, 125, 0.14);
+  --color-status-amber: #E59828;
+  --color-status-amber-bg: rgba(229, 152, 40, 0.14);
+  --color-status-danger: #E63946;
+  --color-status-danger-bg: rgba(230, 57, 70, 0.16);
   --color-status-cyan: #38BDF8;
   --color-status-cyan-bg: rgba(56, 189, 248, 0.14);
-  --color-status-purple: #A78BFA;
-  --color-status-purple-bg: rgba(167, 139, 250, 0.14);
+  --color-status-purple: #9D4EDD;
+  --color-status-purple-bg: rgba(157, 78, 221, 0.14);
 
-  /* Spacing & Radii (Refined, no generic bubbly corners) */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
+  /* Spacing & Radii — ZERO ROUNDED CORNERS (Occult Sharp & Chamfered Geometry) */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-full: 0px;
 
-  /* Atmospheric Shadows & Chiaroscuro Lighting */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 10px 24px -4px rgba(0, 0, 0, 0.65);
-  --shadow-lg: 0 24px 48px -8px rgba(0, 0, 0, 0.85);
-  --shadow-gold: 0 0 32px -4px rgba(196, 163, 107, 0.22);
-  --shadow-crimson: 0 0 32px -4px rgba(88, 17, 26, 0.4);
+  /* Atmospheric Shadows & Occult Lighting */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.7);
+  --shadow-md: 0 10px 28px -4px rgba(0, 0, 0, 0.85);
+  --shadow-lg: 0 24px 50px -8px rgba(0, 0, 0, 0.95);
+  --shadow-crimson: 0 0 28px rgba(139, 0, 0, 0.5);
+  --shadow-blood: 0 0 20px rgba(230, 57, 70, 0.35);
+  --shadow-gold: 0 0 24px rgba(179, 146, 85, 0.2);
 
-  /* Backwards compatibility aliases */
+  /* Primary Theme Aliases (Blood Crimson Dominance) */
   --color-bg-app: var(--color-bg-base);
   --color-bg-card: var(--color-bg-surface-1);
   --color-bg-card-hover: var(--color-bg-surface-2);
   --color-border: var(--color-border-subtle);
   --color-text-main: var(--color-text-primary);
-  --color-primary: var(--color-accent-gold);
-  --color-primary-hover: var(--color-accent-gold-hover);
+  --color-primary: var(--color-accent-crimson);
+  --color-primary-hover: var(--color-accent-crimson-hover);
   --color-success: var(--color-status-emerald);
   --color-success-bg: var(--color-status-emerald-bg);
   --color-error: var(--color-status-danger);
@@ -86,30 +90,30 @@
 
   /* ==========================================================================
      Material Design 3 (M3) Semantic Design Tokens & State Layers
-     Aligned with Dark Cinematic Luxury Brand Theme
+     Aligned with Dark Occult & Blood Red Aesthetic
      ========================================================================== */
-  --md-sys-color-surface: #07080A;
-  --md-sys-color-surface-dim: #050608;
-  --md-sys-color-surface-bright: #161922;
-  --md-sys-color-surface-container-lowest: #0A0C11;
-  --md-sys-color-surface-container-low: #0F1118;
-  --md-sys-color-surface-container: #161820;
-  --md-sys-color-surface-container-high: #1E212B;
-  --md-sys-color-surface-container-highest: #272B38;
+  --md-sys-color-surface: #050608;
+  --md-sys-color-surface-dim: #030405;
+  --md-sys-color-surface-bright: #120A0E;
+  --md-sys-color-surface-container-lowest: #080507;
+  --md-sys-color-surface-container-low: #0C070A;
+  --md-sys-color-surface-container: #10090D;
+  --md-sys-color-surface-container-high: #160D12;
+  --md-sys-color-surface-container-highest: #1E1119;
 
-  --md-sys-color-on-surface: #F0EBE1;
-  --md-sys-color-on-surface-variant: #A8A398;
-  --md-sys-color-outline: rgba(196, 163, 107, 0.35);
-  --md-sys-color-outline-variant: rgba(240, 235, 225, 0.08);
+  --md-sys-color-on-surface: #ECE7DE;
+  --md-sys-color-on-surface-variant: #9E9689;
+  --md-sys-color-outline: rgba(139, 0, 0, 0.45);
+  --md-sys-color-outline-variant: rgba(139, 0, 0, 0.2);
 
-  --md-sys-color-primary: #C4A36B;
-  --md-sys-color-on-primary: #07080A;
-  --md-sys-color-primary-container: rgba(196, 163, 107, 0.14);
-  --md-sys-color-on-primary-container: #DFC18A;
+  --md-sys-color-primary: #8B0000;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: rgba(139, 0, 0, 0.25);
+  --md-sys-color-on-primary-container: #FF8A96;
 
-  --md-sys-state-hover: rgba(196, 163, 107, 0.08);
-  --md-sys-state-focus: rgba(196, 163, 107, 0.16);
-  --md-sys-state-pressed: rgba(196, 163, 107, 0.22);
+  --md-sys-state-hover: rgba(139, 0, 0, 0.12);
+  --md-sys-state-focus: rgba(230, 57, 70, 0.22);
+  --md-sys-state-pressed: rgba(139, 0, 0, 0.32);
 
   --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
   --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1.15);
@@ -117,5 +121,5 @@
   --md-sys-motion-duration-medium: 250ms;
   --md-sys-motion-duration-long: 400ms;
 
-  --focus-ring: 0 0 0 2px #07080A, 0 0 0 4px #C4A36B;
+  --focus-ring: 0 0 0 2px #050608, 0 0 0 4px #E63946;
 }

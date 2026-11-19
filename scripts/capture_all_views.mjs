@@ -56,6 +56,23 @@ try {
     console.log(`[CAPTURED] ${filename}`);
   }
 
+  async function setRole(role) {
+    await send('Runtime.evaluate', {
+      expression: `
+        (() => {
+          const users = {
+            PLAYER: { id: 'user_player_01', name: 'Trường Nguyễn (Người chơi)', role: 'PLAYER', student_verified: true, student_card_no: 'SV-HCM-2024-9981' },
+            DM: { id: 'user_dm_01', name: 'Hải Đăng (Quản trò)', role: 'DM', bio: 'DM kỳ cựu với hơn 500 giờ dẫn dắt Jubensha trinh thám & kinh dị.' },
+            ADMIN: { id: 'user_admin_01', name: 'Ban Quản Trị Hệ Thống', role: 'ADMIN' }
+          };
+          sessionStorage.setItem('kbs_session_user', JSON.stringify(users['${role}']));
+          window.location.reload();
+        })()
+      `
+    });
+    await new Promise(r => setTimeout(r, 1500));
+  }
+
   // 1. Homepage
   await snap('http://127.0.0.1:3000/#/', 1440, 900, false, 'homepage_desktop_1440.png');
   await snap('http://127.0.0.1:3000/#/', 1280, 800, false, 'homepage_laptop_1280.png');
@@ -71,14 +88,27 @@ try {
   await snap('http://127.0.0.1:3000/#/games/game_001', 390, 844, true, 'detail_mobile_390.png');
 
   // 4. Player Dashboard
+  await setRole('PLAYER');
   await snap('http://127.0.0.1:3000/#/player/dashboard', 1440, 900, false, 'player_dashboard_1440.png');
   await snap('http://127.0.0.1:3000/#/player/dashboard', 390, 844, true, 'player_dashboard_390.png');
 
-  // 5. DM Dashboard
+  // 5. DM Dashboard & Assignments
+  await setRole('DM');
   await snap('http://127.0.0.1:3000/#/dm/dashboard', 1440, 900, false, 'dm_dashboard_1440.png');
+  await snap('http://127.0.0.1:3000/#/dm/assignments', 1440, 900, false, 'dm_assignments_1440.png');
 
-  // 6. Admin Dashboard
+  // 6. Admin Dashboard & Ops Pages
+  await setRole('ADMIN');
   await snap('http://127.0.0.1:3000/#/admin/dashboard', 1440, 900, false, 'admin_dashboard_1440.png');
+  await snap('http://127.0.0.1:3000/#/admin/dm-assignments', 1440, 900, false, 'admin_dm_assignments_1440.png');
+  await snap('http://127.0.0.1:3000/#/admin/refunds', 1440, 900, false, 'admin_refunds_1440.png');
+
+  // 7. Create Room Wizard (Form)
+  await setRole('PLAYER');
+  await snap('http://127.0.0.1:3000/#/player/create-room', 1440, 900, false, 'create_room_wizard_1440.png');
+
+  // 8. Login Page (Auth Form)
+  await snap('http://127.0.0.1:3000/#/login', 1440, 900, false, 'login_page_1440.png');
 
   ws.close();
 } finally {

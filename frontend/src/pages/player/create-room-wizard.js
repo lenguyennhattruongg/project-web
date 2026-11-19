@@ -49,8 +49,8 @@ export class CreateRoomWizard {
 
     // 3. Step Content Mount
     this.stepContainer = h('div', {
-      className: 'wizard-step-container',
-      style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-hairline); border-radius: var(--radius-xs); padding: 2.5rem; box-shadow: var(--shadow-md);'
+      className: 'wizard-step-container card-dark',
+      style: 'padding: 2.5rem;'
     });
     container.appendChild(this.stepContainer);
 
@@ -303,13 +303,13 @@ export class CreateRoomWizard {
       h('h3', { className: 'charter-title', style: 'font-size: 1.8rem; margin-bottom: 0.5rem;' }, 'Giai Đoạn 04: Bóc Tách Báo Giá & Niêm Phong Phòng'),
       
       // Summary Dossier
-      h('div', { style: 'background: var(--color-bg-surface-2); border: 1px solid var(--color-border-hairline); padding: 1.5rem; border-radius: var(--radius-xs); margin-bottom: 1.5rem;' },
-        h('h4', { className: 'highlight-gold', style: 'font-size: 1.3rem; margin-bottom: 0.75rem;' }, this.selectedGame.title),
+      h('div', { style: 'background: #0A0608; border: 1px solid #361016; border-left: 4px solid #8B0000; padding: 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); margin-bottom: 1.5rem;' },
+        h('h4', { className: 'highlight-blood', style: 'font-size: 1.3rem; margin-bottom: 0.75rem;' }, this.selectedGame.title),
         h('div', { style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; font-size: 0.9rem;' },
           h('div', {}, '📅 Ngày & Giờ: ', h('strong', { className: 'text-light font-mono' }, `${this.selectedDate} lúc ${this.selectedTime}`)),
           h('div', {}, '👥 Quy mô bàn: ', h('strong', { className: 'text-light font-mono' }, `${this.selectedGame.min_players}–${this.selectedGame.max_players} thám tử`)),
           h('div', {}, '⏳ Hạn chiêu mộ: ', h('strong', { className: 'text-light font-mono' }, '4 giờ kể từ lúc mở')),
-          h('div', {}, '💰 Cọc giữ ghế: ', h('strong', { className: 'text-gold font-mono' }, '50.000 VNĐ / người (Cố định)'))
+          h('div', {}, '💰 Cọc giữ ghế: ', h('strong', { className: 'text-blood font-mono' }, '50.000 VNĐ / người (Cố định)'))
         )
       ),
 

@@ -136,7 +136,7 @@ export class PlayerDashboardPage {
 
       if (myRooms.length === 0) {
         leftCol.appendChild(
-          h('div', { className: 'empty-state text-center', style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-subtle); padding: 3rem 1.5rem; border-radius: var(--radius-xs);' },
+          h('div', { className: 'empty-state text-center', style: 'background: #0A0608; border: 1px solid #361016; border-left: 4px solid #8B0000; padding: 3rem 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));' },
             h('p', { className: 'text-muted', style: 'font-size: 1.05rem; margin-bottom: 1.5rem;' },
               'Bạn chưa tham gia hoặc khởi tạo phòng chơi nào.'
             ),
@@ -167,7 +167,7 @@ export class PlayerDashboardPage {
               h('a', { href: `#/player/rooms/${room.id}` }, game.title)
             ),
             h('div', { className: 'case-dossier-meta' },
-              h('span', {}, renderIcon('calendar'), ' Khởi hành: ', h('strong', { className: 'text-gold' }, formatDateTime(room.session_start_time))),
+              h('span', {}, renderIcon('calendar'), ' Khởi hành: ', h('strong', { className: 'text-blood' }, formatDateTime(room.session_start_time))),
               h('span', {}, renderIcon('users'), ` ${room.participants.length}/${game.max_players} thám tử`),
               h('span', {}, renderIcon('shield'), room.dm_assignment ? `DM: ${room.dm_assignment.dm_name}` : 'Chưa xếp DM')
             ),
@@ -201,18 +201,18 @@ export class PlayerDashboardPage {
       const rightCol = h('div', { className: 'desk-right-col' },
         h('div', { className: 'cases-ledger-header' },
           h('h3', { className: 'cases-ledger-title' }, 'Cẩm Nang Thao Tác'),
-          h('span', { className: 'font-mono text-gold', style: 'font-size: 0.8rem;' }, 'V16 RULES')
+          h('span', { className: 'font-mono text-blood', style: 'font-size: 0.8rem;' }, 'V16 RULES')
         ),
-        h('div', { style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-hairline); padding: 1.5rem; border-radius: var(--radius-xs); margin-bottom: 1.5rem;' },
-          h('h4', { className: 'highlight-gold mb-2' }, renderIcon('shield'), ' Quy Tắc Ký Thác & Đổi Lịch'),
+        h('div', { style: 'background: #0A0608; border: 1px solid #361016; border-left: 4px solid #8B0000; padding: 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); margin-bottom: 1.5rem;' },
+          h('h4', { className: 'highlight-blood mb-2' }, renderIcon('shield'), ' Quy Tắc Ký Thác & Đổi Lịch'),
           h('ul', { style: 'color: var(--color-text-secondary); font-size: 0.88rem; line-height: 1.7; padding-left: 1.25rem; margin: 0;' },
-            h('li', {}, 'Tiền cọc cố định ', h('strong', { className: 'text-gold' }, '50.000 VNĐ / người'), ', trừ trực tiếp vào bill khi tới quán.'),
+            h('li', {}, 'Tiền cọc cố định ', h('strong', { className: 'text-blood' }, '50.000 VNĐ / người'), ', trừ trực tiếp vào bill khi tới quán.'),
             h('li', {}, 'Mỗi người chơi có ', h('strong', {}, 'hạn cọc 2 giờ riêng'), ' sau khi phòng được Admin chốt DM và lịch.'),
             h('li', {}, 'Hủy trước giờ chơi ', h('strong', { className: 'text-emerald' }, '≥ 24 giờ'), ' đủ điều kiện xét hoàn cọc.'),
             h('li', {}, 'Đề xuất đổi lịch yêu cầu ', h('strong', {}, '100% thành viên'), ' đồng thuận trong hạn 2 giờ.')
           )
         ),
-        h('div', { style: 'background: var(--color-bg-surface-1); border: 1px solid var(--color-border-subtle); padding: 1.5rem; border-radius: var(--radius-xs);' },
+        h('div', { style: 'background: #0A0608; border: 1px solid #361016; border-left: 4px solid #8B0000; padding: 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));' },
           h('h4', { style: 'font-size: 1.1rem; color: var(--color-text-primary); margin-bottom: 1rem;' }, 'Liên Kết Nhanh'),
           h('div', { style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
             h('a', { className: 'btn btn-secondary btn-block text-left', href: '#/games' },
