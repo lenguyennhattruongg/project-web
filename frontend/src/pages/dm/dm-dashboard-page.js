@@ -32,9 +32,9 @@ export class DmDashboardPage {
     const header = h('div', { className: 'dm-command-hero flex-between', style: 'flex-wrap: wrap; gap: 1.5rem;' },
       h('div', {},
         h('span', { className: 'dossier-badge-pill' },
-          renderIcon('shield'), ' TRẠM CHỈ HUY QUẢN TRÒ • SALON PRIVÉ'
+          renderIcon('shield'), ' TRẠM CHỈ HUY QUẢN TRÒ // SALON PRIVÉ'
         ),
-        h('h1', { className: 'dm-command-title' }, `Bàn Làm Việc DM: ${user.name}`),
+        h('h1', { className: 'dm-command-title' }, `BÀN LÀM VIỆC DM: ${user.name.toUpperCase()}`),
         h('p', { className: 'text-muted' },
           'Theo dõi các ca phân công dẫn dắt, mốc chuẩn bị kịch bản và vận hành phiên chơi tại quán.'
         )

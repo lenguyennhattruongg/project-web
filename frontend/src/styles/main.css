@@ -83,8 +83,8 @@ textarea:focus-visible,
    Header & Demo Control Banner (Material 3 Expressive System Utility)
    ========================================================================== */
 .demo-control-banner {
-  background: var(--md-sys-color-surface-container-high, #1A1C25);
-  border-bottom: 1px solid var(--color-border-hairline);
+  background: #060406 !important;
+  border-bottom: 1px solid #23080C !important;
   padding: 0.5rem 1.5rem;
   display: flex;
   justify-content: space-between;
@@ -102,17 +102,47 @@ textarea:focus-visible,
 }
 
 .demo-badge {
-  background: rgba(196, 163, 107, 0.15);
-  border: 1px solid var(--color-accent-gold);
-  color: var(--color-accent-gold);
+  background: rgba(139, 0, 0, 0.22) !important;
+  border: 1px solid #8B0000 !important;
+  color: #FF8591 !important;
   font-weight: 700;
   padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-xs);
+  border-radius: 0 !important;
   font-size: 0.72rem;
   letter-spacing: 1px;
   font-family: var(--font-mono);
   display: inline-flex;
   align-items: center;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+}
+
+.three-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(230, 57, 70, 0.14);
+  border: 1px solid rgba(230, 57, 70, 0.5);
+  color: #FF4D5E;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  letter-spacing: 0.8px;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+}
+.three-status-badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #FF4D5E;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #FF4D5E;
+  animation: pulseNeon 1.5s infinite alternate;
+}
+@keyframes pulseNeon {
+  from { opacity: 0.4; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1.3); }
 }
 
 .demo-text {
@@ -2065,57 +2095,128 @@ select option {
   margin-bottom: 0.65rem;
 }
 
-.player-desk-title {
-  font-family: var(--font-display);
-  font-size: 2.8rem;
-  font-style: italic;
-  font-weight: 700;
-  color: #ECE7DE;
-  text-shadow: 0 0 20px rgba(139, 0, 0, 0.4);
-  margin-bottom: 0.5rem;
+.player-desk-title,
+.dm-command-title,
+.page-title {
+  font-family: var(--font-display) !important;
+  font-size: 2.6rem !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  line-height: 1.2 !important;
+  margin: 0.5rem 0 0.5rem 0 !important;
+  background: linear-gradient(180deg, #FFFFFF 0%, #ECE7DE 45%, #D4A3AA 75%, #8B0000 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 0 4px 24px rgba(230, 57, 70, 0.45) !important;
+  position: relative;
+  display: inline-block;
 }
 
-/* Integrated Metrics Strip: Sharp Chamfered Panels */
-.dossier-metrics-strip {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.2fr;
-  background: #0A0608 !important;
-  border: 1px solid #361016 !important;
-  border-left: 3px solid #8B0000 !important;
-  border-radius: 0 !important;
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  margin-bottom: 2.5rem;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.8), 0 0 20px rgba(139, 0, 0, 0.2);
+.player-desk-title::after,
+.dm-command-title::after,
+.page-title::after {
+  content: '';
+  display: block;
+  width: 90px;
+  height: 2px;
+  background: linear-gradient(90deg, #E63946 0%, rgba(139, 0, 0, 0) 100%);
+  margin-top: 0.6rem;
 }
+
+.page-subtitle,
+.player-dossier-hero p,
+.dm-command-hero p {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: #A89F93 !important;
+  line-height: 1.6;
+  max-width: 780px;
+  margin-bottom: 0;
+}
+
+/* Integrated Metrics Strip: Occult HUD Terminal Gauges */
+.dossier-metrics-strip,
+.dm-metrics-strip,
+.admin-metrics-strip {
+  display: grid;
+  background: #070507 !important;
+  border: 1px solid #361016 !important;
+  border-left: 4px solid #8B0000 !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  margin-bottom: 2.5rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 24px rgba(139, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.dossier-metrics-strip { grid-template-columns: 1fr 1fr 1.2fr; }
+.dm-metrics-strip { grid-template-columns: repeat(4, 1fr); }
+.admin-metrics-strip.strip-5 { grid-template-columns: repeat(5, 1fr); }
 
 .metric-strip-item {
-  padding: 1.25rem 1.75rem;
+  padding: 1.5rem 1.85rem;
   border-right: 1px solid rgba(139, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(180deg, rgba(10, 6, 8, 0.8) 0%, rgba(5, 3, 4, 0.95) 100%);
 }
 .metric-strip-item:last-child {
   border-right: none;
 }
+.metric-strip-item:hover {
+  background: linear-gradient(180deg, rgba(24, 10, 16, 0.95) 0%, rgba(12, 6, 9, 0.95) 100%);
+  box-shadow: inset 0 0 24px rgba(230, 57, 70, 0.2);
+}
+.metric-strip-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8B0000, transparent);
+  transition: background 0.3s ease;
+}
+.metric-strip-item:hover::after {
+  background: linear-gradient(90deg, #E63946, #FF4D5E);
+  box-shadow: 0 0 12px #E63946;
+}
 
 .metric-strip-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: #FF8591;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #FF8591 !important;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 0.35rem;
+  letter-spacing: 1.2px;
+  margin-bottom: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.metric-strip-label::before {
+  content: '◆';
+  font-size: 0.55rem;
+  color: #E63946;
 }
 
-.metric-strip-val {
+.metric-strip-val,
+.metric-strip-value {
   font-family: var(--font-mono);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-size: 1.85rem !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
   display: flex;
   align-items: baseline;
   gap: 0.4rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 16px rgba(230, 57, 70, 0.5);
 }
 
 .metric-strip-sub {
@@ -2141,11 +2242,18 @@ select option {
   margin-bottom: 1.25rem;
 }
 
-.cases-ledger-title {
-  font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
+.cases-ledger-title,
+.tactical-section-title,
+.section-title {
+  font-family: var(--font-display) !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.2px !important;
+  color: #ECE7DE !important;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .case-dossier-item {
@@ -2528,25 +2636,6 @@ select option {
   border-bottom: 1px solid var(--color-noir-divider);
   margin-bottom: 2rem;
 }
-
-.dm-command-title {
-  font-family: var(--font-display);
-  font-size: 2.8rem;
-  font-style: italic;
-  font-weight: 700;
-  margin: 0.5rem 0 0.25rem 0;
-  color: #ECE7DE;
-  text-shadow: 0 0 20px rgba(139, 0, 0, 0.4);
-}
-
-.dm-metrics-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  background: #0A0608 !important;
-  border: 1px solid #361016 !important;
-  border-left: 3px solid #8B0000 !important;
-  border-radius: 0 !important;
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
   margin-bottom: 2.5rem;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.8), 0 0 20px rgba(139, 0, 0, 0.2);
 }
@@ -2919,12 +3008,22 @@ select option {
   border-radius: 0 !important;
   padding: 0.75rem 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(139, 0, 0, 0.3);
-  animation: toastIn 0.25s ease;
+  animation: toastIn 0.25s ease forwards;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.toast-item.toast-leaving {
+  animation: toastOut 0.25s ease forwards;
 }
 
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(40px); }
 }
 
 .toast-item.toast-success { border-color: var(--color-status-emerald); border-left-color: var(--color-status-emerald) !important; }

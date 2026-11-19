@@ -29,9 +29,9 @@ export class PlayerDashboardPage {
     const header = h('div', { className: 'player-dossier-hero flex-between' },
       h('div', {},
         h('span', { className: 'dossier-badge-pill' },
-          renderIcon('shield'), ' HỒ SƠ ĐIỀU TRA VIÊN • SALON PRIVÉ'
+          renderIcon('shield'), ' HỒ SƠ ĐIỀU TRA VIÊN // SALON PRIVÉ'
         ),
-        h('h1', { className: 'player-desk-title' }, `Bàn Làm Việc: ${user.name}`),
+        h('h1', { className: 'player-desk-title' }, `BÀN LÀM VIỆC: ${user.name.toUpperCase()}`),
         h('p', { className: 'text-muted' },
           'Theo dõi tiến trình các vụ án đang tham gia, thời hạn thành lập và đếm ngược đặt cọc.'
         )

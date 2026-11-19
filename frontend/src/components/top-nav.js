@@ -18,6 +18,7 @@ export function renderTopNav(router) {
     const banner = h('div', { className: 'demo-control-banner' },
       h('div', { className: 'demo-banner-left' },
         h('span', { className: 'demo-badge' }, 'CHẾ ĐỘ DEMO'),
+        h('span', { className: 'three-status-badge', title: 'Three.js 3D Occult Engine & Kinetic Click Effects Online' }, '3D OCCULT LAB'),
         h('span', { className: 'demo-text' }, 'Dữ liệu mô phỏng đồng bộ cả 3 Portal, chưa kết nối backend.')
       ),
       h('div', { className: 'demo-banner-right' },

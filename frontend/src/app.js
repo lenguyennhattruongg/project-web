@@ -6,6 +6,8 @@ import { Router } from './utils/router.js';
 import { auth } from './utils/auth.js';
 import { renderTopNav } from './components/top-nav.js';
 import { renderBottomNav } from './components/bottom-nav.js';
+import { threeAmbient } from './utils/three-ambient.js';
+import { clickEffects } from './utils/click-effects.js';
 
 // Public Pages
 import { HomePage } from './pages/public/home-page.js';
@@ -124,4 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateNavbars();
   router.start();
+
+  // Initialize Three.js 3D Occult Engine & Kinetic Click Shockwaves
+  try {
+    threeAmbient.init();
+    clickEffects.init();
+  } catch (err) {
+    console.warn('3D/Motion enhancements initialized in fallback mode:', err);
+  }
 });

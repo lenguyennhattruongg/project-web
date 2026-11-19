@@ -1,6 +1,7 @@
 /**
  * Accessible Toast Notification System
  * Uses aria-live="polite" for screen reader accessibility.
+ * Auto-caps at 3 simultaneous toasts and ensures robust cleanup.
  */
 import { h, renderIcon } from '../utils/dom.js';
 
@@ -18,8 +19,14 @@ function ensureContainer() {
   return toastContainer;
 }
 
-export function showToast(message, type = 'info', durationMs = 3800) {
+export function showToast(message, type = 'info', durationMs = 3200) {
   const container = ensureContainer();
+
+  // Cap at 3 toasts max to prevent screen clutter
+  while (container.children.length >= 3) {
+    const oldest = container.firstElementChild;
+    if (oldest) oldest.remove();
+  }
 
   const iconName = type === 'success' ? 'check' : (type === 'error' ? 'alertTriangle' : 'info');
 
@@ -31,7 +38,7 @@ export function showToast(message, type = 'info', durationMs = 3800) {
     h('button', {
       className: 'toast-close-btn',
       'aria-label': 'Đóng thông báo',
-      onclick: () => removeToast(toastEl),
+      onclick: () => removeToast(toastEl, true),
     }, '×')
   );
 
@@ -41,11 +48,21 @@ export function showToast(message, type = 'info', durationMs = 3800) {
     removeToast(toastEl);
   }, durationMs);
 
-  function removeToast(el) {
+  function removeToast(el, immediate = false) {
+    if (!el || !el.parentNode) return;
     clearTimeout(timer);
-    el.classList.add('toast-leaving');
-    el.addEventListener('animationend', () => {
+
+    if (immediate) {
       el.remove();
-    }, { once: true });
+      return;
+    }
+
+    el.classList.add('toast-leaving');
+    const cleanup = () => {
+      if (el.parentNode) el.remove();
+    };
+    el.addEventListener('animationend', cleanup, { once: true });
+    // Safe fallback timeout
+    setTimeout(cleanup, 280);
   }
 }
