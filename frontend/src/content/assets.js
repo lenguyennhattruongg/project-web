@@ -48,6 +48,36 @@ export function getGameVisualTheme(title, isAgeRestricted = false) {
   };
 }
 
+export function renderGameCoverElement(game, options = {}) {
+  const { width = 400, height = 560, className = 'game-cover-photo' } = options;
+  const coverUrl = game.cover_url || `./assets/images/covers/${game.id}.jpg`;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'game-cover-wrapper';
+  wrapper.style.cssText = 'position: relative; width: 100%; height: 100%; overflow: hidden; background: #0A0507;';
+
+  const img = document.createElement('img');
+  img.src = coverUrl;
+  img.alt = `Hồ sơ án: ${game.title}`;
+  img.className = className;
+  img.loading = 'lazy';
+  img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'game-cover-gradient-overlay';
+  overlay.style.cssText = 'position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,6,8,0.15) 0%, rgba(5,6,8,0.75) 100%); pointer-events: none;';
+
+  img.onerror = () => {
+    img.style.display = 'none';
+    overlay.style.display = 'none';
+    wrapper.innerHTML = generateGamePosterSvg(game.title, game.is_age_restricted, width, height);
+  };
+
+  wrapper.appendChild(img);
+  wrapper.appendChild(overlay);
+  return wrapper;
+}
+
 export function generateGamePosterSvg(title, isAgeRestricted = false, width = 400, height = 560) {
   const theme = getGameVisualTheme(title, isAgeRestricted);
   const cleanTitle = (title || 'Kịch Bản Sát').replace(/&/g, '&amp;').replace(/</g, '&lt;');

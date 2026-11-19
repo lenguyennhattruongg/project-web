@@ -7,7 +7,8 @@ const brainDir = 'C:\\Users\\Acer\\.gemini\\antigravity\\brain\\20a9971b-e58a-43
 const chrome = spawn(chromePath, [
   '--headless=new',
   '--remote-debugging-port=9225',
-  '--disable-gpu',
+  '--use-gl=angle',
+  '--enable-webgl',
   '--window-size=1440,1000',
   'http://127.0.0.1:3000/#/'
 ]);

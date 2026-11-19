@@ -64,6 +64,7 @@ export const GAMES_CATALOG = RAW_TITLES.map((item, idx) => {
     id,
     code: `KBS-${String(idx + 1).padStart(2, '0')}`,
     title: item.title,
+    cover_url: `./assets/images/covers/${id}.jpg`,
     is_age_restricted: item.is18,
     genre: item.genre,
     verified: false, // Bắt buộc: Tên chờ đối chiếu với menu gốc của quán

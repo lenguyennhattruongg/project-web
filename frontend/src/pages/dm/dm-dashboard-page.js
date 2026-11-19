@@ -11,6 +11,7 @@ import { formatDateTime } from '../../utils/format.js';
 import { checkDmPrepBuffer } from '../../utils/rules.js';
 import { showReasonDialog } from '../../components/reason-dialog.js';
 import { showToast } from '../../components/toast.js';
+import { createPortal3DSeal } from '../../components/portal-3d-seal.js';
 
 export class DmDashboardPage {
   constructor(mountPoint, { router }) {
@@ -28,9 +29,9 @@ export class DmDashboardPage {
       return;
     }
 
-    // 1. Master Command Station Hero
-    const header = h('div', { className: 'dm-command-hero flex-between', style: 'flex-wrap: wrap; gap: 1.5rem;' },
-      h('div', {},
+    // 1. Master Command Station Hero with 3D Holographic Matrix Seal
+    const header = h('div', { className: 'dm-command-hero flex-between flex-align-center', style: 'flex-wrap: wrap; gap: 1.5rem;' },
+      h('div', { style: 'flex: 1; min-width: 280px;' },
         h('span', { className: 'dossier-badge-pill' },
           renderIcon('shield'), ' TRẠM CHỈ HUY QUẢN TRÒ // SALON PRIVÉ'
         ),
@@ -39,12 +40,15 @@ export class DmDashboardPage {
           'Theo dõi các ca phân công dẫn dắt, mốc chuẩn bị kịch bản và vận hành phiên chơi tại quán.'
         )
       ),
-      h('div', { className: 'dashboard-header-actions', style: 'display: flex; gap: 0.75rem;' },
-        h('a', { className: 'btn btn-secondary', href: '#/dm/availability' },
-          renderIcon('calendar'), ' Đăng Ký Lịch Rảnh'
-        ),
-        h('a', { className: 'btn btn-primary', href: '#/dm/assignments' },
-          renderIcon('shield'), ' Tiếp Nhận Phân Công'
+      h('div', { className: 'hero-side-block flex-align-center', style: 'gap: 1.5rem;' },
+        createPortal3DSeal('DM'),
+        h('div', { className: 'dashboard-header-actions', style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
+          h('a', { className: 'btn btn-secondary', href: '#/dm/availability' },
+            renderIcon('calendar'), ' Đăng Ký Lịch Rảnh'
+          ),
+          h('a', { className: 'btn btn-primary', href: '#/dm/assignments' },
+            renderIcon('shield'), ' Tiếp Nhận Phân Công'
+          )
         )
       )
     );

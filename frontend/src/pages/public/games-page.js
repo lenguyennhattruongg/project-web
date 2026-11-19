@@ -4,7 +4,7 @@
  */
 import { h, renderIcon } from '../../utils/dom.js';
 import { apiService } from '../../api/api-service.js';
-import { generateGamePosterSvg } from '../../content/assets.js';
+import { generateGamePosterSvg, renderGameCoverElement } from '../../content/assets.js';
 import { formatCurrency } from '../../utils/format.js';
 
 export class GamesPage {
@@ -162,9 +162,12 @@ export class GamesPage {
     }
 
     list.forEach((game) => {
+      const posterWrapper = h('div', { className: 'game-folio-poster' });
+      posterWrapper.appendChild(renderGameCoverElement(game, { width: 360, height: 240 }));
+
       const item = h('div', { className: 'game-folio-item' },
         // Poster Cover
-        h('div', { className: 'game-folio-poster', innerHTML: generateGamePosterSvg(game.title, game.is_age_restricted, 320, 220) }),
+        posterWrapper,
         // Body Details
         h('div', { className: 'game-folio-body' },
           h('div', { className: 'game-tags-row' },

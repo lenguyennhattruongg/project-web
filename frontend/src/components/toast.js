@@ -1,31 +1,54 @@
 /**
  * Accessible Toast Notification System
  * Uses aria-live="polite" for screen reader accessibility.
- * Auto-caps at 3 simultaneous toasts and ensures robust cleanup.
+ * Auto-caps at 2 simultaneous toasts, deduplicates messages, and auto-dismisses in 2000ms.
  */
 import { h, renderIcon } from '../utils/dom.js';
 
-let toastContainer = null;
+let activeToasts = new Map(); // message -> { element, timer }
 
-function ensureContainer() {
-  if (!toastContainer || !document.body.contains(toastContainer)) {
-    toastContainer = h('div', {
+function getContainer() {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = h('div', {
       className: 'toast-container',
       'aria-live': 'polite',
       'aria-atomic': 'true',
     });
-    document.body.appendChild(toastContainer);
+    document.body.appendChild(container);
   }
-  return toastContainer;
+  return container;
 }
 
-export function showToast(message, type = 'info', durationMs = 3200) {
-  const container = ensureContainer();
+export function showToast(message, type = 'info', durationMs = 2000) {
+  if (!message) return;
+  const container = getContainer();
 
-  // Cap at 3 toasts max to prevent screen clutter
-  while (container.children.length >= 3) {
+  // Deduplicate: If an identical toast is currently displayed, reset its timer instead of stacking
+  if (activeToasts.has(message)) {
+    const existing = activeToasts.get(message);
+    clearTimeout(existing.timer);
+    existing.timer = setTimeout(() => removeToast(existing.element, message), durationMs);
+    // Subtle bounce feedback
+    existing.element.classList.remove('toast-leaving');
+    existing.element.style.animation = 'none';
+    void existing.element.offsetWidth; // trigger reflow
+    existing.element.style.animation = 'toastIn 0.2s ease forwards';
+    return;
+  }
+
+  // Cap at 2 toasts max to prevent screen clutter
+  while (container.children.length >= 2) {
     const oldest = container.firstElementChild;
-    if (oldest) oldest.remove();
+    if (oldest) {
+      for (const [msg, item] of activeToasts.entries()) {
+        if (item.element === oldest) {
+          activeToasts.delete(msg);
+          break;
+        }
+      }
+      oldest.remove();
+    }
   }
 
   const iconName = type === 'success' ? 'check' : (type === 'error' ? 'alertTriangle' : 'info');
@@ -38,19 +61,26 @@ export function showToast(message, type = 'info', durationMs = 3200) {
     h('button', {
       className: 'toast-close-btn',
       'aria-label': 'Đóng thông báo',
-      onclick: () => removeToast(toastEl, true),
+      onclick: () => removeToast(toastEl, message, true),
     }, '×')
   );
 
   container.appendChild(toastEl);
 
   const timer = setTimeout(() => {
-    removeToast(toastEl);
+    removeToast(toastEl, message);
   }, durationMs);
 
-  function removeToast(el, immediate = false) {
-    if (!el || !el.parentNode) return;
-    clearTimeout(timer);
+  activeToasts.set(message, { element: toastEl, timer });
+
+  function removeToast(el, msgKey, immediate = false) {
+    if (!el || !el.parentNode) {
+      if (msgKey) activeToasts.delete(msgKey);
+      return;
+    }
+    const item = activeToasts.get(msgKey);
+    if (item) clearTimeout(item.timer);
+    activeToasts.delete(msgKey);
 
     if (immediate) {
       el.remove();
@@ -62,7 +92,18 @@ export function showToast(message, type = 'info', durationMs = 3200) {
       if (el.parentNode) el.remove();
     };
     el.addEventListener('animationend', cleanup, { once: true });
-    // Safe fallback timeout
-    setTimeout(cleanup, 280);
+    setTimeout(cleanup, 200);
   }
+}
+
+/** Clear all active toasts (useful on route navigation) */
+export function clearAllToasts() {
+  const container = document.querySelector('.toast-container');
+  if (container) {
+    container.innerHTML = '';
+  }
+  for (const item of activeToasts.values()) {
+    clearTimeout(item.timer);
+  }
+  activeToasts.clear();
 }

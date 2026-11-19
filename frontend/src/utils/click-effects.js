@@ -1,12 +1,14 @@
 /**
  * Interactive Button Click & Kinetic Occult Shockwave System
- * Spawns dynamic scarlet shockwaves, forensic spark particles, and notifies Three.js
+ * Spawns dynamic scarlet shockwaves, wax seal splatter, button depression,
+ * and procedural subtle mechanical typewriter/stamp click sound via Web Audio API (0KB assets).
  */
 import { threeAmbient } from './three-ambient.js';
 
 class ClickEffectsEngine {
   constructor() {
     this.container = null;
+    this.audioCtx = null;
     this.initialized = false;
   }
 
@@ -14,17 +16,20 @@ class ClickEffectsEngine {
     if (this.initialized) return;
     if (typeof document === 'undefined') return;
 
-    // Create a top-layer click particle container
-    const container = document.createElement('div');
-    container.id = 'click-effects-container';
-    container.style.cssText = `
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 99999;
-      overflow: hidden;
-    `;
-    document.body.appendChild(container);
+    // Create top-layer click particle container
+    let container = document.getElementById('click-effects-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'click-effects-container';
+      container.style.cssText = `
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 99999;
+        overflow: hidden;
+      `;
+      document.body.appendChild(container);
+    }
     this.container = container;
 
     // Global click handler
@@ -33,29 +38,80 @@ class ClickEffectsEngine {
     this.initialized = true;
   }
 
+  getAudioContext() {
+    if (!this.audioCtx && typeof window !== 'undefined') {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        this.audioCtx = new AudioContext();
+      }
+    }
+    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+      this.audioCtx.resume();
+    }
+    return this.audioCtx;
+  }
+
+  playTactileClickSound() {
+    try {
+      const ctx = this.getAudioContext();
+      if (!ctx) return;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      // Muted mechanical thud / typewriter click
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(140, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(32, ctx.currentTime + 0.045);
+
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.045);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.05);
+    } catch {
+      // Audio context policy or disabled — silent fallback
+    }
+  }
+
   handleClick(e) {
     const x = e.clientX;
     const y = e.clientY;
 
-    // Check if target is interactive
-    const target = e.target.closest('button, .btn, a, .tactical-filter-btn, .pill-noir, .demo-role-btn, .card-dark, .status-badge');
+    const target = e.target.closest('button, .btn, a, .tactical-filter-btn, .pill-noir, .demo-role-btn, .card-dark, .status-badge, .game-card-dossier');
     const isInteractive = Boolean(target);
 
-    // 1. Trigger Three.js pulse
-    threeAmbient.triggerPulse(isInteractive ? 1.2 : 0.4);
-
-    // 2. Button tactile feedback with GSAP if available
-    if (target && window.gsap) {
-      window.gsap.fromTo(target, 
-        { scale: 0.95 }, 
-        { scale: 1, duration: 0.28, ease: 'back.out(2)' }
-      );
+    // 1. Play subtle tactile procedural sound
+    if (isInteractive) {
+      this.playTactileClickSound();
     }
 
-    // 3. Spawn expanding shockwave ring
+    // 2. Three.js background pulse
+    threeAmbient.triggerPulse(isInteractive ? 1.5 : 0.4);
+
+    // 3. Button tactile depression
+    if (target) {
+      target.style.transition = 'transform 0.08s ease';
+      target.style.transform = 'scale(0.96)';
+      setTimeout(() => {
+        target.style.transform = '';
+      }, 120);
+
+      if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.gsap.fromTo(target, 
+          { filter: 'brightness(1.35) drop-shadow(0 0 8px rgba(230, 57, 70, 0.6))' }, 
+          { filter: 'none', duration: 0.35, ease: 'power2.out' }
+        );
+      }
+    }
+
+    // 4. Expanding scarlet shockwave
     this.spawnShockwave(x, y, isInteractive);
 
-    // 4. Spawn sparks if interactive
+    // 5. Sparks and blood ember splatter if interactive
     if (isInteractive) {
       this.spawnSparks(x, y);
     }
@@ -69,39 +125,39 @@ class ClickEffectsEngine {
       position: absolute;
       left: ${x}px;
       top: ${y}px;
-      width: 12px;
-      height: 12px;
-      margin-left: -6px;
-      margin-top: -6px;
+      width: 14px;
+      height: 14px;
+      margin-left: -7px;
+      margin-top: -7px;
       border-radius: 50%;
       border: 2px solid ${isInteractive ? '#FF4D5E' : 'rgba(139, 0, 0, 0.6)'};
-      box-shadow: 0 0 12px ${isInteractive ? 'rgba(230, 57, 70, 0.8)' : 'rgba(139, 0, 0, 0.3)'};
+      box-shadow: 0 0 16px ${isInteractive ? 'rgba(230, 57, 70, 0.9)' : 'rgba(139, 0, 0, 0.3)'};
       pointer-events: none;
       transform: scale(0.2);
       opacity: 1;
-      transition: transform 0.48s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.48s ease-out;
+      transition: transform 0.42s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.42s ease-out;
     `;
 
     this.container.appendChild(ring);
 
     requestAnimationFrame(() => {
-      ring.style.transform = isInteractive ? 'scale(5.5)' : 'scale(3)';
+      ring.style.transform = isInteractive ? 'scale(6.5)' : 'scale(3.2)';
       ring.style.opacity = '0';
     });
 
-    setTimeout(() => ring.remove(), 520);
+    setTimeout(() => ring.remove(), 450);
   }
 
   spawnSparks(x, y) {
     if (!this.container) return;
 
-    const sparkCount = 8;
-    const colors = ['#FF4D5E', '#E63946', '#B39255', '#FFFFFF'];
+    const sparkCount = 10;
+    const colors = ['#FF4D5E', '#E63946', '#C4A36B', '#FFFFFF', '#8B0000'];
 
     for (let i = 0; i < sparkCount; i++) {
       const spark = document.createElement('div');
-      const angle = (Math.PI * 2 / sparkCount) * i + (Math.random() - 0.5) * 0.5;
-      const distance = 25 + Math.random() * 45;
+      const angle = (Math.PI * 2 / sparkCount) * i + (Math.random() - 0.5) * 0.4;
+      const distance = 20 + Math.random() * 50;
       const tx = Math.cos(angle) * distance;
       const ty = Math.sin(angle) * distance;
       const color = colors[Math.floor(Math.random() * colors.length)];
@@ -118,7 +174,7 @@ class ClickEffectsEngine {
         pointer-events: none;
         transform: translate(0, 0) scale(1);
         opacity: 1;
-        transition: transform 0.42s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.42s ease-out;
+        transition: transform 0.38s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.38s ease-out;
       `;
 
       this.container.appendChild(spark);
@@ -128,7 +184,7 @@ class ClickEffectsEngine {
         spark.style.opacity = '0';
       });
 
-      setTimeout(() => spark.remove(), 450);
+      setTimeout(() => spark.remove(), 400);
     }
   }
 }

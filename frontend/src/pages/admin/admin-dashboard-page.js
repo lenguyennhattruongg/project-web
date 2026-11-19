@@ -8,6 +8,7 @@ import { sharedStore } from '../../api/demo/shared-store.js';
 import { auth } from '../../utils/auth.js';
 import { renderStatusBadge } from '../../components/status-badge.js';
 import { formatDateTime, formatCurrency } from '../../utils/format.js';
+import { createPortal3DSeal } from '../../components/portal-3d-seal.js';
 
 export class AdminDashboardPage {
   constructor(mountPoint, { router }) {
@@ -25,22 +26,25 @@ export class AdminDashboardPage {
       return;
     }
 
-    // Header
+    // Header with 3D Holographic Matrix Seal
     container.appendChild(
-      h('div', { className: 'page-header flex-between' },
-        h('div', {},
+      h('div', { className: 'page-header flex-between flex-align-center', style: 'gap: 1.5rem; flex-wrap: wrap;' },
+        h('div', { style: 'flex: 1; min-width: 280px;' },
           h('div', { className: 'dossier-badge-pill' },
             renderIcon('shield', 'text-gold'),
-            'TACTICAL OPERATIONS DESK // ROOT PRIVILEGE'
+            ' TACTICAL OPERATIONS DESK // ROOT PRIVILEGE'
           ),
           h('h1', { className: 'page-title' }, 'Trung Tâm Điều Hành Quản Trị'),
           h('p', { className: 'page-subtitle text-muted' },
             'Hàng đợi điều phối nghiệp vụ thời gian thực: Phân công Quản trò, phân bổ mật thất, giải quyết sự cố và kiểm soát dòng tiền cọc.'
           )
         ),
-        h('div', { className: 'quick-nav-pills flex-align-center' },
-          h('a', { className: 'btn btn-secondary btn-sm mr-2', href: '#/admin/rooms' }, renderIcon('list'), ' Quản lý phòng'),
-          h('a', { className: 'btn btn-primary btn-sm', href: '#/admin/dm-assignments' }, renderIcon('user'), ' Điều phối DM')
+        h('div', { className: 'hero-side-block flex-align-center', style: 'gap: 1.5rem;' },
+          createPortal3DSeal('ADMIN'),
+          h('div', { className: 'quick-nav-pills flex-column', style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
+            h('a', { className: 'btn btn-secondary btn-sm', href: '#/admin/rooms' }, renderIcon('list'), ' Quản lý phòng'),
+            h('a', { className: 'btn btn-primary btn-sm', href: '#/admin/dm-assignments' }, renderIcon('user'), ' Điều phối DM')
+          )
         )
       )
     );

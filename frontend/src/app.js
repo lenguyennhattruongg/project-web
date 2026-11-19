@@ -6,6 +6,7 @@ import { Router } from './utils/router.js';
 import { auth } from './utils/auth.js';
 import { renderTopNav } from './components/top-nav.js';
 import { renderBottomNav } from './components/bottom-nav.js';
+import { clearAllToasts } from './components/toast.js';
 import { threeAmbient } from './utils/three-ambient.js';
 import { clickEffects } from './utils/click-effects.js';
 import { initAutoCiphers } from './utils/text-cipher.js';
@@ -118,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function onPageTransition() {
+    clearAllToasts();
     updateNavbars();
     setTimeout(() => {
       initAutoCiphers();

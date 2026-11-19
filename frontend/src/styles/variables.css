@@ -6,10 +6,12 @@
      Forensic Interrogation Sheet Inputs, and Haunting Chiaroscuro Lighting.
      ========================================================================== */
 
-  /* Typography Fonts */
-  --font-display: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-title: 'Be Vietnam Pro', sans-serif;
+  /* Typography Fonts (Occult Noir Salon & Forensic Investigation) */
+  --font-cinzel: 'Cinzel Decorative', 'Cinzel', serif;
+  --font-serif: 'Cormorant Garamond', Garamond, Georgia, serif;
+  --font-display: 'Cinzel Decorative', 'Cinzel', 'Cormorant Garamond', 'Be Vietnam Pro', serif;
+  --font-heading: 'Cinzel', 'Cormorant Garamond', 'Be Vietnam Pro', serif;
+  --font-title: 'Cinzel', 'Cormorant Garamond', 'Be Vietnam Pro', serif;
   --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 

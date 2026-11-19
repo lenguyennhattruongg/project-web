@@ -4,7 +4,7 @@
  */
 import { h, renderIcon } from '../../utils/dom.js';
 import { apiService } from '../../api/api-service.js';
-import { generateGamePosterSvg } from '../../content/assets.js';
+import { generateGamePosterSvg, renderGameCoverElement } from '../../content/assets.js';
 import { formatCurrency, formatDateTime } from '../../utils/format.js';
 import { renderStatusBadge } from '../../components/status-badge.js';
 
@@ -112,9 +112,8 @@ export class GameDetailPage {
         h('div', { className: 'dossier-sidebar' },
           h('div', { className: 'dossier-sidebar-card' },
             h('div', {
-              style: { textAlign: 'center', marginBottom: '1.5rem' },
-              innerHTML: generateGamePosterSvg(game.title, game.is_age_restricted, 320, 240),
-            }),
+              style: { textAlign: 'center', marginBottom: '1.5rem', overflow: 'hidden', clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' },
+            }, renderGameCoverElement(game, { width: 400, height: 280 })),
             h('h3', { style: 'font-size: 1.3rem; margin-bottom: 0.5rem; text-align: center;' }, 'Bảng Giá & Ký Thác'),
             h('p', { className: 'text-muted text-center', style: 'font-size: 0.85rem; margin-bottom: 1.25rem;' },
               'Giá vé trọn gói đã gồm phòng vật lý, kịch bản độc quyền, trang phục và Quản trò (DM).'

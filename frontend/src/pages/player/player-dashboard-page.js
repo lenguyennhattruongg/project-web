@@ -8,6 +8,7 @@ import { auth } from '../../utils/auth.js';
 import { renderStatusBadge } from '../../components/status-badge.js';
 import { renderCountdown } from '../../components/countdown.js';
 import { formatDateTime } from '../../utils/format.js';
+import { createPortal3DSeal } from '../../components/portal-3d-seal.js';
 
 export class PlayerDashboardPage {
   constructor(mountPoint, { router }) {
@@ -25,9 +26,9 @@ export class PlayerDashboardPage {
       return;
     }
 
-    // 1. Detective Dossier Header
-    const header = h('div', { className: 'player-dossier-hero flex-between' },
-      h('div', {},
+    // 1. Detective Dossier Header with 3D Holographic Matrix Seal
+    const header = h('div', { className: 'player-dossier-hero flex-between flex-align-center', style: 'gap: 1.5rem; flex-wrap: wrap;' },
+      h('div', { style: 'flex: 1; min-width: 280px;' },
         h('span', { className: 'dossier-badge-pill' },
           renderIcon('shield'), ' HỒ SƠ ĐIỀU TRA VIÊN // SALON PRIVÉ'
         ),
@@ -36,9 +37,12 @@ export class PlayerDashboardPage {
           'Theo dõi tiến trình các vụ án đang tham gia, thời hạn thành lập và đếm ngược đặt cọc.'
         )
       ),
-      h('div', { className: 'dashboard-header-actions' },
-        h('a', { className: 'btn btn-primary btn-lg', href: '#/player/create-room' },
-          renderIcon('plus'), ' Khởi Tạo Vụ Án Mới'
+      h('div', { className: 'hero-side-block flex-align-center', style: 'gap: 1.5rem;' },
+        createPortal3DSeal('PLAYER'),
+        h('div', { className: 'dashboard-header-actions' },
+          h('a', { className: 'btn btn-primary btn-lg', href: '#/player/create-room' },
+            renderIcon('plus'), ' Khởi Tạo Vụ Án Mới'
+          )
         )
       )
     );
