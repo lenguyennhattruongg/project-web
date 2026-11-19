@@ -3748,3 +3748,80 @@ select option {
     color: var(--color-accent-gold);
   }
 }
+
+/* ==========================================================================
+   NOIR CINEMATIC UPGRADES: FILM GRAIN, SPOTLIGHT & WAX-SEAL PRESS
+   ========================================================================== */
+
+/* 35mm Noir Film Grain Overlay (0KB, Pure SVG Filter) */
+.noir-grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99998;
+  opacity: 0.22;
+  filter: url(#noir-film-grain);
+}
+
+/* Dynamic Radial Mouse Spotlight on Cards */
+.card-dark,
+.case-dossier-item,
+.tactical-card,
+.spotlight-card,
+.metric-strip-item {
+  position: relative;
+}
+
+.card-dark::before,
+.case-dossier-item::before,
+.tactical-card::before,
+.spotlight-card::before,
+.metric-strip-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    380px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+    rgba(230, 57, 70, 0.16),
+    transparent 65%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.card-dark:hover::before,
+.case-dossier-item:hover::before,
+.tactical-card:hover::before,
+.spotlight-card:hover::before,
+.metric-strip-item:hover::before {
+  opacity: 1;
+}
+
+/* Wax Seal Stamp Press Micro-interactions for Buttons */
+.btn:active,
+.btn-primary:active,
+.btn-secondary:active,
+.btn-role-tab:active,
+.pill-noir:active {
+  transform: scale(0.97) !important;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.9), 0 0 16px rgba(230, 57, 70, 0.5) !important;
+  transition: transform 0.08s ease, box-shadow 0.08s ease !important;
+}
+
+/* Form Input Validation Shake Animation */
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.form-control.is-invalid,
+.has-error .form-control {
+  border-color: #FF4D5E !important;
+  animation: shakeError 0.4s ease;
+  box-shadow: 0 0 14px rgba(230, 57, 70, 0.5) !important;
+}

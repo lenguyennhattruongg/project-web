@@ -8,6 +8,8 @@ import { renderTopNav } from './components/top-nav.js';
 import { renderBottomNav } from './components/bottom-nav.js';
 import { threeAmbient } from './utils/three-ambient.js';
 import { clickEffects } from './utils/click-effects.js';
+import { initAutoCiphers } from './utils/text-cipher.js';
+import { initCardInteractions } from './utils/card-interactions.js';
 
 // Public Pages
 import { HomePage } from './pages/public/home-page.js';
@@ -115,13 +117,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function onPageTransition() {
+    updateNavbars();
+    setTimeout(() => {
+      initAutoCiphers();
+      initCardInteractions();
+    }, 80);
+  }
+
   // Subscribe to auth changes to refresh navbars immediately
   auth.subscribe(() => {
-    updateNavbars();
+    onPageTransition();
   });
 
   window.addEventListener('hashchange', () => {
-    updateNavbars();
+    onPageTransition();
   });
 
   updateNavbars();
@@ -131,6 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     threeAmbient.init();
     clickEffects.init();
+    initAutoCiphers();
+    initCardInteractions();
   } catch (err) {
     console.warn('3D/Motion enhancements initialized in fallback mode:', err);
   }
