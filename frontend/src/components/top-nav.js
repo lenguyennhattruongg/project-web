@@ -30,7 +30,10 @@ export function renderTopNav(router) {
               showToast('Đã chuyển sang tài khoản Người chơi (Player) có xác minh HSSV.', 'info');
               router.navigate('/player/dashboard');
             },
-          }, 'Người chơi (HSSV)'),
+          }, 
+            h('span', { className: 'role-label-full' }, 'Người chơi (HSSV)'),
+            h('span', { className: 'role-label-short' }, 'Người chơi')
+          ),
           h('button', {
             className: `btn-role-tab ${currentRole === ROLES.DM ? 'active' : ''}`,
             onclick: () => {
@@ -38,7 +41,10 @@ export function renderTopNav(router) {
               showToast('Đã chuyển sang tài khoản Quản trò (DM).', 'info');
               router.navigate('/dm/dashboard');
             },
-          }, 'Quản trò (DM)'),
+          }, 
+            h('span', { className: 'role-label-full' }, 'Quản trò (DM)'),
+            h('span', { className: 'role-label-short' }, 'Quản trò')
+          ),
           h('button', {
             className: `btn-role-tab ${currentRole === ROLES.ADMIN ? 'active' : ''}`,
             onclick: () => {
@@ -46,7 +52,10 @@ export function renderTopNav(router) {
               showToast('Đã chuyển sang tài khoản Quản trị viên (Admin).', 'info');
               router.navigate('/admin/dashboard');
             },
-          }, 'Quản trị viên')
+          }, 
+            h('span', { className: 'role-label-full' }, 'Quản trị viên'),
+            h('span', { className: 'role-label-short' }, 'Quản trị')
+          )
         ),
         h('button', {
           className: 'btn-reset-demo',

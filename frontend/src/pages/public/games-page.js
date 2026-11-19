@@ -36,7 +36,7 @@ export class GamesPage {
     const filterBar = h('div', { className: 'catalog-filter-noir' },
       // Search Row
       h('div', { className: 'catalog-search-row' },
-        h('div', { className: 'search-input-group', style: 'width: 100%;' },
+        h('div', { className: 'search-input-group' },
           renderIcon('search', 'search-icon'),
           h('input', {
             type: 'text',
@@ -63,7 +63,7 @@ export class GamesPage {
             },
           }, genre ? genre : 'Tất cả')
         ),
-        h('span', { className: 'filter-pill-label', style: 'margin-left: 1rem;' }, 'Số người:'),
+        h('span', { className: 'filter-pill-label', style: 'margin-left: 0.5rem;' }, 'Số người:'),
         ...['', '5', '6', '7', '8'].map((p) =>
           h('button', {
             className: `filter-pill-btn ${this.selectedPlayers === p ? 'active' : ''}`,
@@ -75,8 +75,7 @@ export class GamesPage {
           }, p ? `${p} người` : 'Tất cả')
         ),
         h('button', {
-          className: `filter-pill-btn ${this.is18Only ? 'active' : ''}`,
-          style: this.is18Only ? 'background: #58111A; border-color: #D83B40; color: #FFF;' : 'margin-left: 1rem;',
+          className: `filter-pill-btn btn-pill-18 ${this.is18Only ? 'active' : ''}`,
           onclick: () => {
             this.is18Only = !this.is18Only;
             this.updateFilterPills();
@@ -110,8 +109,7 @@ export class GamesPage {
     btns.forEach((btn) => {
       const text = btn.textContent.trim();
       if (text.includes('18+')) {
-        btn.className = `filter-pill-btn ${this.is18Only ? 'active' : ''}`;
-        btn.style = this.is18Only ? 'background: #58111A; border-color: #D83B40; color: #FFF; margin-left: 1rem;' : 'margin-left: 1rem;';
+        btn.className = `filter-pill-btn btn-pill-18 ${this.is18Only ? 'active' : ''}`;
       }
     });
   }

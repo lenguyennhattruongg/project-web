@@ -83,4 +83,39 @@
   --color-error-bg: var(--color-status-danger-bg);
   --color-warning: var(--color-status-amber);
   --color-warning-bg: var(--color-status-amber-bg);
+
+  /* ==========================================================================
+     Material Design 3 (M3) Semantic Design Tokens & State Layers
+     Aligned with Dark Cinematic Luxury Brand Theme
+     ========================================================================== */
+  --md-sys-color-surface: #07080A;
+  --md-sys-color-surface-dim: #050608;
+  --md-sys-color-surface-bright: #161922;
+  --md-sys-color-surface-container-lowest: #0A0C11;
+  --md-sys-color-surface-container-low: #0F1118;
+  --md-sys-color-surface-container: #161820;
+  --md-sys-color-surface-container-high: #1E212B;
+  --md-sys-color-surface-container-highest: #272B38;
+
+  --md-sys-color-on-surface: #F0EBE1;
+  --md-sys-color-on-surface-variant: #A8A398;
+  --md-sys-color-outline: rgba(196, 163, 107, 0.35);
+  --md-sys-color-outline-variant: rgba(240, 235, 225, 0.08);
+
+  --md-sys-color-primary: #C4A36B;
+  --md-sys-color-on-primary: #07080A;
+  --md-sys-color-primary-container: rgba(196, 163, 107, 0.14);
+  --md-sys-color-on-primary-container: #DFC18A;
+
+  --md-sys-state-hover: rgba(196, 163, 107, 0.08);
+  --md-sys-state-focus: rgba(196, 163, 107, 0.16);
+  --md-sys-state-pressed: rgba(196, 163, 107, 0.22);
+
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1.15);
+  --md-sys-motion-duration-short: 150ms;
+  --md-sys-motion-duration-medium: 250ms;
+  --md-sys-motion-duration-long: 400ms;
+
+  --focus-ring: 0 0 0 2px #07080A, 0 0 0 4px #C4A36B;
 }

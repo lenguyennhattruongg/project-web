@@ -25,8 +25,8 @@ export class GameDetailPage {
 
       // 1. Breadcrumb Navigation
       container.appendChild(
-        h('div', { style: 'padding: 2rem 0 1rem 0;' },
-          h('a', { className: 'link-gold flex-align-center', href: '#/games', style: 'gap: 0.4rem; font-size: 0.9rem;' },
+        h('div', { className: 'dossier-back-container' },
+          h('a', { className: 'dossier-back-link', href: '#/games' },
             renderIcon('chevronLeft'), ' Quay lại Danh mục 42 Hồ Sơ'
           )
         )
