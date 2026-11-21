@@ -9,6 +9,7 @@ import { renderStatusBadge } from '../../components/status-badge.js';
 import { renderCountdown } from '../../components/countdown.js';
 import { formatDateTime } from '../../utils/format.js';
 import { createPortal3DSeal } from '../../components/portal-3d-seal.js';
+import { renderQuickGuide } from '../../components/quick-guide.js';
 
 export class PlayerDashboardPage {
   constructor(mountPoint, { router }) {
@@ -26,15 +27,15 @@ export class PlayerDashboardPage {
       return;
     }
 
-    // 1. Detective Dossier Header with 3D Holographic Matrix Seal
+    // 1. Clean Header with 3D Holographic Matrix Seal
     const header = h('div', { className: 'player-dossier-hero flex-between flex-align-center', style: 'gap: 1.5rem; flex-wrap: wrap;' },
       h('div', { style: 'flex: 1; min-width: 280px;' },
-        h('span', { className: 'dossier-badge-pill' },
-          renderIcon('shield'), ' HỒ SƠ ĐIỀU TRA VIÊN // SALON PRIVÉ'
+        h('span', { className: 'portal-role-pill' },
+          renderIcon('shield', 'text-gold'), ' DÀNH CHO NGƯỜI CHƠI'
         ),
-        h('h1', { className: 'player-desk-title' }, `BÀN LÀM VIỆC: ${user.name.toUpperCase()}`),
+        h('h1', { className: 'player-desk-title' }, `Bàn Làm Việc: ${user.name}`),
         h('p', { className: 'text-muted' },
-          'Theo dõi tiến trình các vụ án đang tham gia, thời hạn thành lập và đếm ngược đặt cọc.'
+          'Theo dõi tiến trình các vụ án đang tham gia, thời hạn gom nhóm và đồng hồ đếm ngược đặt cọc.'
         )
       ),
       h('div', { className: 'hero-side-block flex-align-center', style: 'gap: 1.5rem;' },
@@ -48,13 +49,40 @@ export class PlayerDashboardPage {
     );
     container.appendChild(header);
 
-    // 2. Integrated Metrics Strip
+    // 2. Interactive 3-Step Quick Guide
+    const playerGuide = renderQuickGuide({
+      role: 'player',
+      title: 'Cẩm Nang Bắt Đầu 3 Bước Cho Thám Tử',
+      steps: [
+        {
+          icon: 'search',
+          title: 'Chọn Kịch Bản Ưng Ý',
+          desc: 'Khám phá 42 hồ sơ án mạng: Kinh dị, Cổ trang, Trinh thám suy luận, Giật gân.',
+          action: { label: 'Xem 42 Kịch Bản', href: '#/games', primary: false }
+        },
+        {
+          icon: 'users',
+          title: 'Mở Phòng Hoặc Ghép Đội',
+          desc: 'Tự mở phòng mới để mời bạn bè, hoặc tham gia vào các phòng đang chiêu mộ.',
+          action: { label: 'Tìm Phòng Chơi', href: '#/rooms', primary: true }
+        },
+        {
+          icon: 'shield',
+          title: 'Đặt Cọc 50.000đ Giữ Chỗ',
+          desc: 'Sau khi phòng đủ người và chốt lịch, cọc 50k để giữ chỗ (trừ thẳng vào bill tại quán).',
+          action: null
+        }
+      ]
+    });
+    container.appendChild(playerGuide);
+
+    // 3. Integrated Metrics Strip
     this.metricsContainer = h('div', { className: 'dossier-metrics-strip' },
-      h('div', { className: 'loading-pulse', style: 'padding: 1.5rem;' }, 'Đang giải mã hạn ngạch và hồ sơ...')
+      h('div', { className: 'loading-pulse', style: 'padding: 1.5rem;' }, 'Đang tải thông tin hạn ngạch...')
     );
     container.appendChild(this.metricsContainer);
 
-    // 3. Main 2-Column Desk Layout
+    // 4. Main 2-Column Desk Layout
     this.mainDeskContainer = h('div', { className: 'player-desk-grid' });
     container.appendChild(this.mainDeskContainer);
 
@@ -204,20 +232,20 @@ export class PlayerDashboardPage {
       // Right Column: Detective Guidance & Quick Links
       const rightCol = h('div', { className: 'desk-right-col' },
         h('div', { className: 'cases-ledger-header' },
-          h('h3', { className: 'cases-ledger-title' }, 'Cẩm Nang Thao Tác'),
-          h('span', { className: 'font-mono text-blood', style: 'font-size: 0.8rem;' }, 'V16 RULES')
+          h('h3', { className: 'cases-ledger-title' }, 'Lưu Ý Quan Trọng'),
+          h('span', { className: 'badge-pill-subtle' }, 'Quy chế quán')
         ),
-        h('div', { style: 'background: #0A0608; border: 1px solid #361016; border-left: 4px solid #8B0000; padding: 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); margin-bottom: 1.5rem;' },
-          h('h4', { className: 'highlight-blood mb-2' }, renderIcon('shield'), ' Quy Tắc Ký Thác & Đổi Lịch'),
+        h('div', { className: 'info-box-crimson mb-4' },
+          h('h4', { className: 'highlight-blood mb-2' }, renderIcon('shield'), ' Quy Tắc Đặt Cọc & Hoàn Tiền'),
           h('ul', { style: 'color: var(--color-text-secondary); font-size: 0.88rem; line-height: 1.7; padding-left: 1.25rem; margin: 0;' },
-            h('li', {}, 'Tiền cọc cố định ', h('strong', { className: 'text-blood' }, '50.000 VNĐ / người'), ', trừ trực tiếp vào bill khi tới quán.'),
-            h('li', {}, 'Mỗi người chơi có ', h('strong', {}, 'hạn cọc 2 giờ riêng'), ' sau khi phòng được Admin chốt DM và lịch.'),
-            h('li', {}, 'Hủy trước giờ chơi ', h('strong', { className: 'text-emerald' }, '≥ 24 giờ'), ' đủ điều kiện xét hoàn cọc.'),
-            h('li', {}, 'Đề xuất đổi lịch yêu cầu ', h('strong', {}, '100% thành viên'), ' đồng thuận trong hạn 2 giờ.')
+            h('li', {}, 'Tiền cọc cố định ', h('strong', { className: 'text-blood' }, '50.000 VNĐ / người'), ', trừ trực tiếp vào hóa đơn khi tới quán.'),
+            h('li', {}, 'Mỗi người chơi có ', h('strong', {}, '2 giờ để hoàn tất cọc'), ' sau khi phòng được Admin chốt lịch.'),
+            h('li', {}, 'Hủy trước giờ chơi ', h('strong', { className: 'text-emerald' }, '≥ 24 giờ'), ' được hoàn 100% tiền cọc.'),
+            h('li', {}, 'Đổi lịch chơi yêu cầu ', h('strong', {}, '100% thành viên'), ' trong phòng đồng thuận.')
           )
         ),
-        h('div', { style: 'background: #0A0608; border: 1px solid #361016; border-left: 4px solid #8B0000; padding: 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));' },
-          h('h4', { style: 'font-size: 1.1rem; color: var(--color-text-primary); margin-bottom: 1rem;' }, 'Liên Kết Nhanh'),
+        h('div', { className: 'info-box-crimson' },
+          h('h4', { style: 'font-size: 1rem; color: var(--color-text-primary); margin-bottom: 0.75rem;' }, 'Lối Tắt Hữu Ích'),
           h('div', { style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
             h('a', { className: 'btn btn-secondary btn-block text-left', href: '#/games' },
               renderIcon('search'), ' Tra cứu kho 42 kịch bản'
@@ -226,7 +254,7 @@ export class PlayerDashboardPage {
               renderIcon('clock'), ' Lịch sử cọc & hoàn tiền'
             ),
             h('a', { className: 'btn btn-secondary btn-block text-left', href: '#/player/notifications' },
-              renderIcon('bell'), ' Trung tâm thông báo & nhắc hẹn'
+              renderIcon('bell'), ' Thông báo & nhắc hẹn'
             )
           )
         )

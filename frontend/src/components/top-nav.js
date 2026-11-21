@@ -17,56 +17,57 @@ export function renderTopNav(router) {
 
     const banner = h('div', { className: 'demo-control-banner' },
       h('div', { className: 'demo-banner-left' },
-        h('span', { className: 'demo-badge' }, 'CHẾ ĐỘ DEMO'),
-        h('span', { className: 'three-status-badge', title: 'Three.js 3D Occult Engine & Kinetic Click Effects Online' }, '3D OCCULT LAB'),
-        h('span', { className: 'demo-text' }, 'Dữ liệu mô phỏng đồng bộ cả 3 Portal, chưa kết nối backend.')
+        h('span', { className: 'demo-badge' }, 'CHẾ ĐỘ TRẢI NGHIỆM'),
+        h('span', { className: 'demo-text' }, 'Chuyển đổi vai trò để thử toàn bộ quy trình đặt lịch & quản lý:')
       ),
       h('div', { className: 'demo-banner-right' },
-        h('span', { className: 'demo-switcher-label' }, 'Đổi vai trò 1-click:'),
         h('div', { className: 'demo-role-btns' },
           h('button', {
             className: `btn-role-tab ${currentRole === ROLES.PLAYER ? 'active' : ''}`,
+            title: 'Trải nghiệm giao diện Người chơi: Tìm kịch bản, mở phòng, đặt cọc',
             onclick: () => {
               auth.switchDemoRole(ROLES.PLAYER);
-              showToast('Đã chuyển sang tài khoản Người chơi (Player) có xác minh HSSV.', 'info');
+              showToast('Đã chuyển sang tài khoản Người chơi (Player).', 'info');
               router.navigate('/player/dashboard');
             },
           }, 
-            h('span', { className: 'role-label-full' }, 'Người chơi (HSSV)'),
+            h('span', { className: 'role-label-full' }, '👤 Người chơi (HSSV)'),
             h('span', { className: 'role-label-short' }, 'Người chơi')
           ),
           h('button', {
             className: `btn-role-tab ${currentRole === ROLES.DM ? 'active' : ''}`,
+            title: 'Trải nghiệm giao diện Quản trò (DM): Đăng ký lịch, nhận ca, điều khiển bàn chơi',
             onclick: () => {
               auth.switchDemoRole(ROLES.DM);
               showToast('Đã chuyển sang tài khoản Quản trò (DM).', 'info');
               router.navigate('/dm/dashboard');
             },
           }, 
-            h('span', { className: 'role-label-full' }, 'Quản trò (DM)'),
+            h('span', { className: 'role-label-full' }, '🎭 Quản trò (DM)'),
             h('span', { className: 'role-label-short' }, 'Quản trò')
           ),
           h('button', {
             className: `btn-role-tab ${currentRole === ROLES.ADMIN ? 'active' : ''}`,
+            title: 'Trải nghiệm giao diện Quản trị viên: Gán DM, xếp phòng quán, duyệt cọc',
             onclick: () => {
               auth.switchDemoRole(ROLES.ADMIN);
               showToast('Đã chuyển sang tài khoản Quản trị viên (Admin).', 'info');
               router.navigate('/admin/dashboard');
             },
           }, 
-            h('span', { className: 'role-label-full' }, 'Quản trị viên'),
+            h('span', { className: 'role-label-full' }, '⚡ Quản trị viên'),
             h('span', { className: 'role-label-short' }, 'Quản trị')
           )
         ),
         h('button', {
           className: 'btn-reset-demo',
-          title: 'Khôi phục 12 phòng mẫu ban đầu',
+          title: 'Khôi phục dữ liệu mẫu ban đầu',
           onclick: () => {
             sharedStore.reset();
-            showToast('Đã khôi phục dữ liệu demo ban đầu.', 'success');
+            showToast('Đã khôi phục dữ liệu ban đầu.', 'success');
             router.handleRouting();
           },
-        }, renderIcon('refresh', 'reset-icon'), ' Reset Demo')
+        }, renderIcon('refresh', 'reset-icon'), ' Làm mới')
       )
     );
     container.appendChild(banner);
@@ -97,18 +98,15 @@ export function renderTopNav(router) {
   // Role Specific Portals
   if (role === ROLES.PLAYER) {
     navLinks.appendChild(h('a', { className: 'nav-item nav-highlight', href: '#/player/dashboard' }, 'Phòng của tôi'));
-    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/player/create-room' }, '+ Mở phòng mới'));
-    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/player/history' }, 'Lịch sử & Cọc'));
+    navLinks.appendChild(h('a', { className: 'nav-item btn-nav-cta', href: '#/player/create-room' }, '+ Mở phòng mới'));
   } else if (role === ROLES.DM) {
     navLinks.appendChild(h('a', { className: 'nav-item nav-highlight', href: '#/dm/dashboard' }, 'Bàn làm việc DM'));
     navLinks.appendChild(h('a', { className: 'nav-item', href: '#/dm/assignments' }, 'Nhận phân công'));
     navLinks.appendChild(h('a', { className: 'nav-item', href: '#/dm/availability' }, 'Lịch rảnh'));
   } else if (role === ROLES.ADMIN) {
     navLinks.appendChild(h('a', { className: 'nav-item nav-highlight', href: '#/admin/dashboard' }, 'Bảng quản trị'));
-    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/admin/rooms' }, 'Quản lý phòng'));
-    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/admin/dm-assignments' }, 'Xếp DM'));
-    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/admin/venues' }, 'Phòng vật lý'));
-    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/admin/refunds' }, 'Hoàn cọc'));
+    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/admin/dm-assignments' }, 'Điều phối DM'));
+    navLinks.appendChild(h('a', { className: 'nav-item', href: '#/admin/refunds' }, 'Duyệt hoàn cọc'));
   }
 
   navBar.appendChild(navLinks);

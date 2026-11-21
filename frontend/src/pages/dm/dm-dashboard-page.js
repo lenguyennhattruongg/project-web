@@ -12,6 +12,7 @@ import { checkDmPrepBuffer } from '../../utils/rules.js';
 import { showReasonDialog } from '../../components/reason-dialog.js';
 import { showToast } from '../../components/toast.js';
 import { createPortal3DSeal } from '../../components/portal-3d-seal.js';
+import { renderQuickGuide } from '../../components/quick-guide.js';
 
 export class DmDashboardPage {
   constructor(mountPoint, { router }) {
@@ -29,13 +30,13 @@ export class DmDashboardPage {
       return;
     }
 
-    // 1. Master Command Station Hero with 3D Holographic Matrix Seal
+    // 1. Clean Header with 3D Holographic Matrix Seal
     const header = h('div', { className: 'dm-command-hero flex-between flex-align-center', style: 'flex-wrap: wrap; gap: 1.5rem;' },
       h('div', { style: 'flex: 1; min-width: 280px;' },
-        h('span', { className: 'dossier-badge-pill' },
-          renderIcon('shield'), ' TRẠM CHỈ HUY QUẢN TRÒ // SALON PRIVÉ'
+        h('span', { className: 'portal-role-pill' },
+          renderIcon('shield', 'text-gold'), ' DÀNH CHO QUẢN TRÒ (DM)'
         ),
-        h('h1', { className: 'dm-command-title' }, `BÀN LÀM VIỆC DM: ${user.name.toUpperCase()}`),
+        h('h1', { className: 'dm-command-title' }, `Bàn Làm Việc DM: ${user.name}`),
         h('p', { className: 'text-muted' },
           'Theo dõi các ca phân công dẫn dắt, mốc chuẩn bị kịch bản và vận hành phiên chơi tại quán.'
         )
@@ -43,24 +44,51 @@ export class DmDashboardPage {
       h('div', { className: 'hero-side-block flex-align-center', style: 'gap: 1.5rem;' },
         createPortal3DSeal('DM'),
         h('div', { className: 'dashboard-header-actions', style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
-          h('a', { className: 'btn btn-secondary', href: '#/dm/availability' },
-            renderIcon('calendar'), ' Đăng Ký Lịch Rảnh'
-          ),
           h('a', { className: 'btn btn-primary', href: '#/dm/assignments' },
             renderIcon('shield'), ' Tiếp Nhận Phân Công'
+          ),
+          h('a', { className: 'btn btn-secondary', href: '#/dm/availability' },
+            renderIcon('calendar'), ' Đăng Ký Lịch Rảnh'
           )
         )
       )
     );
     container.appendChild(header);
 
-    // 2. Integrated Metrics Strip
+    // 2. Interactive 3-Step Quick Guide
+    const dmGuide = renderQuickGuide({
+      role: 'dm',
+      title: 'Cẩm Nang Vận Hành 3 Bước Dành Cho Quản Trò (DM)',
+      steps: [
+        {
+          icon: 'calendar',
+          title: 'Đăng Ký Khung Lịch Rảnh',
+          desc: 'Đánh dấu các ca Sáng, Chiều hoặc Tối bạn có thể trực trong tuần để Admin phân công.',
+          action: { label: 'Điền Lịch Rảnh', href: '#/dm/availability', primary: false }
+        },
+        {
+          icon: 'shield',
+          title: 'Phản Hồi Nhận Ca Chơi',
+          desc: 'Kiểm tra kịch bản và xác nhận ca trực (đảm bảo đệm chuẩn bị ≥ 12 giờ trước giờ G).',
+          action: { label: 'Xem Phân Công', href: '#/dm/assignments', primary: true }
+        },
+        {
+          icon: 'users',
+          title: 'Vận Hành & Điểm Danh Tại Quán',
+          desc: 'Có mặt trước 30 phút kiểm tra mật thất, điểm danh người chơi và thu khoản phí còn lại.',
+          action: null
+        }
+      ]
+    });
+    container.appendChild(dmGuide);
+
+    // 3. Integrated Metrics Strip
     this.metricsContainer = h('div', { className: 'dm-metrics-strip' },
       h('div', { className: 'loading-pulse', style: 'padding: 1.5rem;' }, 'Đang tải dữ liệu ca trực...')
     );
     container.appendChild(this.metricsContainer);
 
-    // 3. Main 2-Column Command Desk Layout
+    // 4. Main 2-Column Command Desk Layout
     this.mainDeskContainer = h('div', { className: 'dm-command-grid' });
     container.appendChild(this.mainDeskContainer);
 
@@ -272,12 +300,12 @@ export class DmDashboardPage {
       // Right Column: DM Operational Charter & Guidelines
       const rightCol = h('div', { className: 'desk-right-col' },
         h('div', { className: 'dm-code-charter' },
-          h('div', { className: 'flex-between' },
+          h('div', { className: 'flex-between mb-3' },
             h('h3', { className: 'highlight-gold', style: 'margin: 0; font-size: 1.15rem;' },
-              'Điều Lệ Vận Hành Quản Trò (DM)'
+              'Lưu Ý Dành Cho Quản Trò (DM)'
             ),
-            h('span', { className: 'text-muted font-mono', style: 'font-size: 0.75rem;' },
-              'V16 PROTOCOL'
+            h('span', { className: 'badge-pill-subtle' },
+              'Quy chế salon'
             )
           ),
           h('ul', { className: 'charter-rule-list' },

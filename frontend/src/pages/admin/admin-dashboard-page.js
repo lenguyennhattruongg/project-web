@@ -9,6 +9,7 @@ import { auth } from '../../utils/auth.js';
 import { renderStatusBadge } from '../../components/status-badge.js';
 import { formatDateTime, formatCurrency } from '../../utils/format.js';
 import { createPortal3DSeal } from '../../components/portal-3d-seal.js';
+import { renderQuickGuide } from '../../components/quick-guide.js';
 
 export class AdminDashboardPage {
   constructor(mountPoint, { router }) {
@@ -26,40 +27,55 @@ export class AdminDashboardPage {
       return;
     }
 
-    // Header with 3D Holographic Matrix Seal
+    // 1. Clean Header with 3D Holographic Matrix Seal
     container.appendChild(
       h('div', { className: 'page-header flex-between flex-align-center', style: 'gap: 1.5rem; flex-wrap: wrap;' },
         h('div', { style: 'flex: 1; min-width: 280px;' },
-          h('div', { className: 'dossier-badge-pill' },
+          h('div', { className: 'portal-role-pill' },
             renderIcon('shield', 'text-gold'),
-            ' TACTICAL OPERATIONS DESK // ROOT PRIVILEGE'
+            ' BÀN ĐIỀU HÀNH QUẢN TRỊ VIÊN'
           ),
           h('h1', { className: 'page-title' }, 'Trung Tâm Điều Hành Quản Trị'),
           h('p', { className: 'page-subtitle text-muted' },
-            'Hàng đợi điều phối nghiệp vụ thời gian thực: Phân công Quản trò, phân bổ mật thất, giải quyết sự cố và kiểm soát dòng tiền cọc.'
+            'Theo dõi và điều phối ca chơi thời gian thực: Phân công Quản trò, gán phòng quán, xử lý sự cố và kiểm soát hoàn cọc.'
           )
         ),
         h('div', { className: 'hero-side-block flex-align-center', style: 'gap: 1.5rem;' },
           createPortal3DSeal('ADMIN'),
           h('div', { className: 'quick-nav-pills flex-column', style: 'display: flex; flex-direction: column; gap: 0.6rem;' },
-            h('a', { className: 'btn btn-secondary btn-sm', href: '#/admin/rooms' }, renderIcon('list'), ' Quản lý phòng'),
-            h('a', { className: 'btn btn-primary btn-sm', href: '#/admin/dm-assignments' }, renderIcon('user'), ' Điều phối DM')
+            h('a', { className: 'btn btn-primary btn-sm', href: '#/admin/dm-assignments' }, renderIcon('user'), ' Phân Công DM'),
+            h('a', { className: 'btn btn-secondary btn-sm', href: '#/admin/rooms' }, renderIcon('list'), ' Xem Tất Cả Phòng')
           )
         )
       )
     );
 
-    // Transparent Demo Badge Banner
-    container.appendChild(
-      h('div', { className: 'tactical-badge-banner' },
-        h('span', { className: 'tactical-badge-tag' }, 'DEMO MODE • CLIENT ADAPTER OPERATIONAL'),
-        h('span', { className: 'text-muted' },
-          `ĐĂNG NHẬP: `,
-          h('strong', { className: 'text-gold' }, user.name),
-          ` (QUYỀN TỐI CAO // SHARED MEMORY STORE)`
-        )
-      )
-    );
+    // 2. Interactive 3-Step Quick Guide
+    const adminGuide = renderQuickGuide({
+      role: 'admin',
+      title: 'Quy Trình Điều Phối Nghiệp Vụ Quản Trị',
+      steps: [
+        {
+          icon: 'user',
+          title: 'Gán Quản Trò (DM)',
+          desc: 'Khi phòng đủ người, gán ngay DM có lịch rảnh và kịch bản phù hợp trước giờ chơi.',
+          action: { label: 'Xếp DM Ngay', href: '#/admin/dm-assignments', primary: true }
+        },
+        {
+          icon: 'door',
+          title: 'Chốt Phòng Quán Vật Lý',
+          desc: 'Sau khi DM nhận phòng, chốt phòng quán đủ sức chứa và đệm dọn dẹp 30 phút.',
+          action: { label: 'Xếp Phòng', href: '#/admin/venues', primary: false }
+        },
+        {
+          icon: 'shield',
+          title: 'Kiểm Soát Cọc & Hoàn Tiền',
+          desc: 'Xem xét và phê duyệt các yêu cầu hoàn cọc hợp lệ trước mốc 24.0h theo quy chế.',
+          action: { label: 'Duyệt Hoàn Cọc', href: '#/admin/refunds', primary: false }
+        }
+      ]
+    });
+    container.appendChild(adminGuide);
 
     const res = await apiService.getAdminQueue();
     const queue = res.data;
@@ -67,7 +83,7 @@ export class AdminDashboardPage {
     const pendingRefunds = allRefunds.filter((r) => r.status === 'REQUESTED');
     const recentAudits = (sharedStore.data.auditLogs || []).slice(0, 5);
 
-    // 5-Item Integrated Metrics Strip
+    // 3. 5-Item Integrated Metrics Strip
     const metricsStrip = h('div', { className: 'admin-metrics-strip strip-5' },
       h('div', { className: 'metric-strip-item' },
         h('span', { className: 'metric-strip-label' }, 'Phòng Chờ DM'),
@@ -77,14 +93,14 @@ export class AdminDashboardPage {
         h('a', { className: 'link-gold', href: '#/admin/dm-assignments', style: { fontSize: '0.8rem' } }, 'Điều phối DM →')
       ),
       h('div', { className: 'metric-strip-item' },
-        h('span', { className: 'metric-strip-label' }, 'Chờ Chốt Phòng Quán'),
+        h('span', { className: 'metric-strip-label' }, 'Chờ Chốt Phòng'),
         h('div', { className: 'metric-strip-value' },
           h('strong', { className: queue.waiting_org.length > 0 ? 'text-cyan' : 'text-light' }, String(queue.waiting_org.length))
         ),
         h('a', { className: 'link-gold', href: '#/admin/venues', style: { fontSize: '0.8rem' } }, 'Gán phòng quán →')
       ),
       h('div', { className: 'metric-strip-item' },
-        h('span', { className: 'metric-strip-label' }, 'Chờ Quyết Định Quản Trị'),
+        h('span', { className: 'metric-strip-label' }, 'Chờ Phê Duyệt'),
         h('div', { className: 'metric-strip-value' },
           h('strong', { className: queue.waiting_decision.length > 0 ? 'text-danger' : 'text-light' }, String(queue.waiting_decision.length))
         ),
@@ -98,7 +114,7 @@ export class AdminDashboardPage {
         h('a', { className: 'link-gold', href: '#/admin/refunds', style: { fontSize: '0.8rem' } }, 'Sổ cái hoàn tiền →')
       ),
       h('div', { className: 'metric-strip-item' },
-        h('span', { className: 'metric-strip-label' }, 'Hoàn Tiền Thất Bại (Retry)'),
+        h('span', { className: 'metric-strip-label' }, 'Hoàn Tiền Thất Bại'),
         h('div', { className: 'metric-strip-value' },
           h('strong', { className: queue.refunds_failed.length > 0 ? 'text-danger' : 'text-emerald' }, String(queue.refunds_failed.length))
         ),
@@ -107,19 +123,49 @@ export class AdminDashboardPage {
     );
     container.appendChild(metricsStrip);
 
-    // Tactical Fast Access Grid
-    const navBar = h('div', { className: 'tactical-filter-bar mb-4' },
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/rooms' }, 'DANH SÁCH GAME ROOMS'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/dm-assignments' }, 'ĐIỀU PHỐI & THU HỒI DM'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/venues' }, 'KHÔNG GIAN VẬT LÝ & LỊCH'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/refunds' }, 'DUYỆT HOÀN CỌC (24H RULE)'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/games' }, 'BẢNG GIÁ & KỊCH BẢN (42)'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/promotions' }, 'ƯU ĐÃI & QUYẾT ĐỊNH #7'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/sessions' }, 'LỊCH TRÌNH CA CHƠI'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/users' }, 'TÀI KHOẢN & PHÂN QUYỀN (RBAC)'),
-      h('a', { className: 'tactical-filter-btn', href: '#/admin/audit' }, 'NHẬT KÝ KIỂM TOÁN (AUDIT)')
+    // 4. Categorized Navigation Hub (Gom 9 nút thành 3 nhóm rõ ràng)
+    const navHub = h('div', { className: 'admin-hub-grid mb-4' },
+      h('div', { className: 'admin-hub-card' },
+        h('div', { className: 'hub-card-header' },
+          renderIcon('list', 'text-amber'),
+          h('h4', { className: 'hub-card-title' }, 'Quản Lý Vụ Án & Phân Công')
+        ),
+        h('div', { className: 'hub-links-wrap' },
+          h('a', { className: 'hub-link-pill', href: '#/admin/rooms' }, 'Danh sách phòng chơi'),
+          h('a', { className: 'hub-link-pill highlight', href: '#/admin/dm-assignments' },
+            'Điều phối Quản trò (DM)',
+            queue.waiting_dm.length > 0 ? h('span', { className: 'hub-badge' }, String(queue.waiting_dm.length)) : null
+          ),
+          h('a', { className: 'hub-link-pill', href: '#/admin/venues' }, 'Không gian phòng quán')
+        )
+      ),
+      h('div', { className: 'admin-hub-card' },
+        h('div', { className: 'hub-card-header' },
+          renderIcon('shield', 'text-gold'),
+          h('h4', { className: 'hub-card-title' }, 'Tài Chính & Kịch Bản')
+        ),
+        h('div', { className: 'hub-links-wrap' },
+          h('a', { className: 'hub-link-pill highlight', href: '#/admin/refunds' },
+            'Duyệt hoàn cọc (24h)',
+            pendingRefunds.length > 0 ? h('span', { className: 'hub-badge badge-gold' }, String(pendingRefunds.length)) : null
+          ),
+          h('a', { className: 'hub-link-pill', href: '#/admin/games' }, 'Kho 42 kịch bản & giá'),
+          h('a', { className: 'hub-link-pill', href: '#/admin/promotions' }, 'Ưu đãi & sự cố #7')
+        )
+      ),
+      h('div', { className: 'admin-hub-card' },
+        h('div', { className: 'hub-card-header' },
+          renderIcon('user', 'text-cyan'),
+          h('h4', { className: 'hub-card-title' }, 'Hệ Thống & Kiểm Toán')
+        ),
+        h('div', { className: 'hub-links-wrap' },
+          h('a', { className: 'hub-link-pill', href: '#/admin/sessions' }, 'Lịch trình ca chơi'),
+          h('a', { className: 'hub-link-pill', href: '#/admin/users' }, 'Tài khoản & phân quyền'),
+          h('a', { className: 'hub-link-pill', href: '#/admin/audit' }, 'Nhật ký kiểm toán (Audit)')
+        )
+      )
     );
-    container.appendChild(navBar);
+    container.appendChild(navHub);
 
     // Urgent Action Lists
     const urgentSection = h('div', { className: 'admin-urgent-section mt-4' });
@@ -132,7 +178,7 @@ export class AdminDashboardPage {
             renderIcon('user', 'text-amber'),
             `1. Các Vụ Án Đã Đủ Người, Cần Gán Quản Trò (${queue.waiting_dm.length})`
           ),
-          h('span', { className: 'tactical-mono-tag' }, '// DISPATCH-DM-QUEUE')
+          h('span', { className: 'status-tag-urgent' }, queue.waiting_dm.length > 0 ? 'Cần xử lý ngay' : 'Đã hoàn tất')
         ),
         queue.waiting_dm.length === 0
           ? h('p', { className: 'text-muted' }, 'Hiện tại không có phòng nào đang chờ phân công DM.')
@@ -174,7 +220,7 @@ export class AdminDashboardPage {
             renderIcon('door', 'text-cyan'),
             `2. Các Phòng Đã Chấp Nhận DM, Chờ Chốt Mật Thất Quán (${queue.waiting_org.length})`
           ),
-          h('span', { className: 'tactical-mono-tag' }, '// VENUE-ORG-QUEUE')
+          h('span', { className: 'status-tag-info' }, queue.waiting_org.length > 0 ? 'Chờ xếp phòng' : 'Đã hoàn tất')
         ),
         queue.waiting_org.length === 0
           ? h('p', { className: 'text-muted' }, 'Hiện không có phòng nào đang chờ chốt địa điểm vật lý.')

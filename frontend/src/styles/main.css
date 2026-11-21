@@ -3899,3 +3899,309 @@ select option {
   animation: shakeError 0.4s ease;
   box-shadow: 0 0 14px rgba(230, 57, 70, 0.5) !important;
 }
+
+/* ==========================================================================
+   SIMPLIFIED WORKFLOW & COGNITIVE CLARITY UPGRADES
+   ========================================================================== */
+
+/* 1. Quick Guide Component (Cẩm Nang Dẫn Dắt 3 Bước) */
+.quick-guide-container {
+  background: linear-gradient(135deg, rgba(16, 10, 14, 0.95), rgba(8, 5, 8, 0.98));
+  border: 1px solid rgba(139, 0, 0, 0.35);
+  border-left: 4px solid var(--color-crimson);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.quick-guide-container.is-collapsed {
+  padding: 0.75rem 1.5rem;
+  background: rgba(14, 8, 12, 0.85);
+  border-color: rgba(139, 0, 0, 0.2);
+}
+
+.quick-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quick-guide-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.quick-guide-bulb {
+  color: var(--color-gold);
+  font-size: 1.15rem;
+}
+
+.quick-guide-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.quick-guide-badge {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  background: rgba(196, 163, 107, 0.15);
+  color: var(--color-gold);
+  border: 1px solid rgba(196, 163, 107, 0.3);
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  letter-spacing: 0.04em;
+}
+
+.quick-guide-toggle-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.quick-guide-toggle-btn:hover {
+  border-color: var(--color-crimson);
+  color: var(--color-text-main);
+}
+
+.quick-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .quick-steps-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.quick-step-card {
+  background: rgba(22, 10, 14, 0.6);
+  border: 1px solid rgba(139, 0, 0, 0.25);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.quick-step-card:hover {
+  background: rgba(30, 12, 18, 0.85);
+  border-color: rgba(230, 57, 70, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.quick-step-card.step-highlight {
+  border-color: rgba(196, 163, 107, 0.5);
+  background: rgba(26, 16, 12, 0.7);
+}
+
+.step-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+
+.step-badge-num {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-crimson-light);
+  background: rgba(139, 0, 0, 0.3);
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgba(230, 57, 70, 0.3);
+}
+
+.step-icon {
+  color: var(--color-gold);
+  font-size: 1rem;
+}
+
+.step-title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0 0 0.45rem 0;
+}
+
+.step-desc {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.step-action-btn {
+  align-self: flex-start;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.85rem;
+}
+
+/* 2. Categorized Admin Navigation Hub */
+.admin-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 992px) {
+  .admin-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-hub-card {
+  background: #090507;
+  border: 1px solid rgba(139, 0, 0, 0.3);
+  border-left: 3px solid rgba(196, 163, 107, 0.6);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.admin-hub-card:hover {
+  border-color: rgba(230, 57, 70, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.hub-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hub-card-title {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.hub-links-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hub-link-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0.85rem;
+  background: rgba(20, 10, 14, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hub-link-pill:hover {
+  background: rgba(139, 0, 0, 0.25);
+  border-color: var(--color-crimson);
+  color: var(--color-text-main);
+  transform: translateX(4px);
+}
+
+.hub-link-pill.highlight {
+  border-color: rgba(196, 163, 107, 0.35);
+  color: #f1f5f9;
+}
+
+.hub-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  background: #8B0000;
+  color: #fff;
+  border-radius: 9999px;
+}
+
+.hub-badge.badge-gold {
+  background: rgba(196, 163, 107, 0.2);
+  color: var(--color-gold);
+  border: 1px solid rgba(196, 163, 107, 0.4);
+}
+
+/* 3. Role and Subtitle Pills */
+.portal-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gold);
+  background: rgba(196, 163, 107, 0.1);
+  border: 1px solid rgba(196, 163, 107, 0.25);
+  padding: 0.3rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.info-box-crimson {
+  background: #0A0608;
+  border: 1px solid #361016;
+  border-left: 4px solid #8B0000;
+  padding: 1.25rem 1.5rem;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+.status-tag-urgent {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #ff6b6b;
+  background: rgba(139, 0, 0, 0.3);
+  border: 1px solid rgba(230, 57, 70, 0.4);
+  padding: 0.25rem 0.65rem;
+}
+
+.status-tag-info {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 0.25rem 0.65rem;
+}
+
+.badge-pill-subtle {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+}
+

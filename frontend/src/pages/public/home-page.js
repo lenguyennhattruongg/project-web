@@ -47,11 +47,13 @@ export class HomePage {
             )
           ),
           h('div', { className: 'hero-noir-ticker' },
-            h('span', {}, renderIcon('shield'), ' LAT 21°01\'N • LONG 105°51\'E'),
+            h('span', {}, renderIcon('sparkles'), ' 42 Kịch Bản Bản Quyền'),
             h('span', { className: 'ticker-sep' }, '•'),
-            h('span', { className: 'ticker-badge-gold' }, 'SALON PRIVÉ'),
+            h('span', { className: 'ticker-badge-gold' }, 'Mật Thất Chuẩn Điện Ảnh'),
             h('span', { className: 'ticker-sep' }, '•'),
-            h('span', {}, renderIcon('check'), ' V16 BUSINESS FREEZE')
+            h('span', {}, renderIcon('users'), ' Quản Trò (DM) Dẫn Dắt Riêng'),
+            h('span', { className: 'ticker-sep' }, '•'),
+            h('span', {}, renderIcon('shield'), ' Hoàn Cọc Minh Bạch 24H')
           )
         )
       )
@@ -67,7 +69,7 @@ export class HomePage {
               '“Chữ ‘Sát’ trong Kịch Bản Sát không đơn thuần là án mạng. Đó là thời khắc sự thật trần trụi được phơi bày dưới ánh đèn mờ của mật thất.”'
             ),
             h('span', { className: 'manifesto-quote-author' },
-              '— HỘI ĐỒNG QUẢN TRÒ (DM GUILD) • ĐẶC TẢ V16'
+              '— HỘI ĐỒNG QUẢN TRÒ (DM GUILD) • KỊCH BẢN SÁT'
             )
           ),
           h('div', { className: 'manifesto-text-col' },
