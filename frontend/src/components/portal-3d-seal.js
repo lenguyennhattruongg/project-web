@@ -24,26 +24,26 @@ export function createPortal3DSeal(roleName = 'PLAYER') {
   svgSigil.innerHTML = `
     <defs>
       <linearGradient id="sigil-gold-${roleName}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#C4A36B" stop-opacity="0.9"/>
-        <stop offset="100%" stop-color="#7E1D27" stop-opacity="0.4"/>
+        <stop offset="0%" stop-color="#E11D48" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#9F1239" stop-opacity="0.4"/>
       </linearGradient>
       <linearGradient id="sigil-crimson-${roleName}" x1="100%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#C4A36B" stop-opacity="0.85"/>
-        <stop offset="100%" stop-color="#7E1D27" stop-opacity="0.3"/>
+        <stop offset="0%" stop-color="#F43F5E" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#E11D48" stop-opacity="0.3"/>
       </linearGradient>
     </defs>
     <!-- Outer Compass Track -->
     <circle cx="70" cy="70" r="62" fill="none" stroke="url(#sigil-gold-${roleName})" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.75" />
     <circle cx="70" cy="70" r="54" fill="none" stroke="url(#sigil-crimson-${roleName})" stroke-width="1" opacity="0.65" />
     <!-- Sacred Hexagram & Labyrinth Triangles -->
-    <polygon points="70,22 110,92 30,92" fill="none" stroke="rgba(196, 163, 107, 0.45)" stroke-width="1" />
+    <polygon points="70,22 110,92 30,92" fill="none" stroke="rgba(225, 29, 72, 0.45)" stroke-width="1" />
     <polygon points="70,118 110,48 30,48" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1" />
     <!-- Tactical Reticle Crosshairs -->
-    <line x1="70" y1="12" x2="70" y2="128" stroke="rgba(196, 163, 107, 0.3)" stroke-width="1" stroke-dasharray="2 4" />
-    <line x1="12" y1="70" x2="128" y2="70" stroke="rgba(196, 163, 107, 0.3)" stroke-width="1" stroke-dasharray="2 4" />
+    <line x1="70" y1="12" x2="70" y2="128" stroke="rgba(225, 29, 72, 0.3)" stroke-width="1" stroke-dasharray="2 4" />
+    <line x1="12" y1="70" x2="128" y2="70" stroke="rgba(225, 29, 72, 0.3)" stroke-width="1" stroke-dasharray="2 4" />
     <!-- Inner Core Rune Ring -->
-    <circle cx="70" cy="70" r="28" fill="rgba(196, 163, 107, 0.08)" stroke="url(#sigil-gold-${roleName})" stroke-width="1.2" />
-    <circle cx="70" cy="70" r="14" fill="rgba(126, 29, 39, 0.2)" stroke="#C4A36B" stroke-width="1" />
+    <circle cx="70" cy="70" r="28" fill="rgba(225, 29, 72, 0.08)" stroke="url(#sigil-gold-${roleName})" stroke-width="1.2" />
+    <circle cx="70" cy="70" r="14" fill="rgba(225, 29, 72, 0.2)" stroke="#E11D48" stroke-width="1" />
     <circle cx="70" cy="70" r="4" fill="#FFFFFF" opacity="0.9" />
   `;
   container.appendChild(svgSigil);
@@ -100,7 +100,7 @@ function initThreeSeal(canvas, container, roleName) {
   // 1. Central Occult Polyhedron (Dodecahedron Wireframe & Core)
   const dodecGeom = new THREE.DodecahedronGeometry(1.4, 0);
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0xC4A36B,
+    color: 0xE11D48,
     wireframe: true,
     transparent: true,
     opacity: 0.85,
@@ -111,17 +111,17 @@ function initThreeSeal(canvas, container, roleName) {
   // Inner glowing core
   const coreGeom = new THREE.OctahedronGeometry(0.7, 0);
   const coreMat = new THREE.MeshBasicMaterial({
-    color: 0x7E1D27,
+    color: 0xFFFFFF,
     wireframe: true,
   });
   const coreMesh = new THREE.Mesh(coreGeom, coreMat);
   group.add(coreMesh);
 
   // 2. Gyroscopic Astrolabe Rings
-  // Outer Ring (Velvet Wine)
+  // Outer Ring (Deep Velvet Burgundy)
   const ring1Geom = new THREE.TorusGeometry(1.9, 0.035, 6, 36);
   const ring1Mat = new THREE.MeshBasicMaterial({
-    color: 0x7E1D27,
+    color: 0x9F1239,
     wireframe: true,
     transparent: true,
     opacity: 0.75,
@@ -129,10 +129,10 @@ function initThreeSeal(canvas, container, roleName) {
   const ring1 = new THREE.Mesh(ring1Geom, ring1Mat);
   group.add(ring1);
 
-  // Middle Ring (Brass Gold)
+  // Middle Ring (Platinum Silver)
   const ring2Geom = new THREE.TorusGeometry(1.65, 0.03, 6, 36);
   const ring2Mat = new THREE.MeshBasicMaterial({
-    color: 0xD4AF37,
+    color: 0xE2E8F0,
     wireframe: true,
     transparent: true,
     opacity: 0.85,
@@ -155,7 +155,7 @@ function initThreeSeal(canvas, container, roleName) {
   pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
   const pMat = new THREE.PointsMaterial({
     size: 0.14,
-    color: 0xC4A36B,
+    color: 0xF43F5E,
     transparent: true,
     opacity: 0.95,
   });
