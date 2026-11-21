@@ -168,7 +168,7 @@ export class PlayerDashboardPage {
 
       if (myRooms.length === 0) {
         leftCol.appendChild(
-          h('div', { className: 'empty-state text-center', style: 'background: #0A0608; border: 1px solid #361016; border-left: 4px solid #8B0000; padding: 3rem 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));' },
+          h('div', { className: 'empty-state text-center', style: 'background: #12151D; border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #C4A36B; padding: 3rem 1.5rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));' },
             h('p', { className: 'text-muted', style: 'font-size: 1.05rem; margin-bottom: 1.5rem;' },
               'Bạn chưa tham gia hoặc khởi tạo phòng chơi nào.'
             ),

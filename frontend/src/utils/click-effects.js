@@ -130,8 +130,8 @@ class ClickEffectsEngine {
       margin-left: -7px;
       margin-top: -7px;
       border-radius: 50%;
-      border: 2px solid ${isInteractive ? '#FF4D5E' : 'rgba(139, 0, 0, 0.6)'};
-      box-shadow: 0 0 16px ${isInteractive ? 'rgba(230, 57, 70, 0.9)' : 'rgba(139, 0, 0, 0.3)'};
+      border: 2px solid ${isInteractive ? '#C4A36B' : 'rgba(196, 163, 107, 0.5)'};
+      box-shadow: 0 0 14px ${isInteractive ? 'rgba(196, 163, 107, 0.7)' : 'rgba(196, 163, 107, 0.25)'};
       pointer-events: none;
       transform: scale(0.2);
       opacity: 1;
@@ -152,7 +152,7 @@ class ClickEffectsEngine {
     if (!this.container) return;
 
     const sparkCount = 10;
-    const colors = ['#FF4D5E', '#E63946', '#C4A36B', '#FFFFFF', '#8B0000'];
+    const colors = ['#C4A36B', '#D4AF37', '#F1EBE4', '#E5C583', '#7E1D27'];
 
     for (let i = 0; i < sparkCount; i++) {
       const spark = document.createElement('div');
